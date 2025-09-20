@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "79511292062",
+    "project_id": "sentinel-ed93e",
+    "storage_bucket": "sentinel-ed93e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:79511292062:android:36abc75230c5614895538f",
+        "android_client_info": {
+          "package_name": "com.example.coastsentinel"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDE2eXX5fJq7KDJ8VhpNL-7HkKYpFoGxMo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
