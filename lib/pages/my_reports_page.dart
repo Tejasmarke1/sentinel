@@ -1,6 +1,8 @@
 // my_reports_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io';
 
 class MyReportsPage extends StatefulWidget {
@@ -16,87 +18,24 @@ class _MyReportsPageState extends State<MyReportsPage>
   @override
   bool get wantKeepAlive => true;
 
+  // Firebase instances
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   String _selectedFilter = 'All';
-  final List<String> _filters = ['All', 'Pending', 'Verified', 'Dismissed', 'Under Review'];
+  final List<String> _filters = ['All', 'pending', 'verified', 'dismissed', 'under_review'];
   
   late AnimationController _listAnimationController;
   late Animation<double> _listAnimation;
 
-  // Mock user reports data
-  final List<UserReport> _userReports = [
-    UserReport(
-      id: '1',
-      title: 'High Waves near Marina Beach',
-      description: 'Observed dangerous wave conditions with heights exceeding 4 meters. Multiple swimmers were warned to exit the water immediately. Local lifeguards confirmed the hazardous conditions.',
-      hazardType: 'High Waves',
-      severity: ReportSeverity.high,
-      location: 'Marina Beach, Chennai, Tamil Nadu, India',
-      latitude: 13.0477,
-      longitude: 80.2824,
-      status: ReportStatus.verified,
-      timestamp: DateTime.now().subtract(const Duration(hours: 4)),
-      mediaFiles: ['beach_waves_1.jpg', 'warning_sign.mp4'],
-      adminNotes: 'Verified by Coast Guard. Alert issued to local authorities.',
-    ),
-    UserReport(
-      id: '2',
-      title: 'Oil Spill Spotted',
-      description: 'Small oil spill observed near fishing harbor. Approximately 50-meter radius affected. Local fish smell strongly of petroleum.',
-      hazardType: 'Pollution',
-      severity: ReportSeverity.medium,
-      location: 'Fishing Harbor, Visakhapatnam, Andhra Pradesh, India',
-      latitude: 17.7231,
-      longitude: 83.3219,
-      status: ReportStatus.underReview,
-      timestamp: DateTime.now().subtract(const Duration(days: 1)),
-      mediaFiles: ['oil_spill_1.jpg', 'oil_spill_2.jpg', 'affected_area.mp4'],
-      adminNotes: 'Under investigation by Marine Pollution Control Board.',
-    ),
-    UserReport(
-      id: '3',
-      title: 'Unusual Current Patterns',
-      description: 'Noticed strong rip currents in normally calm waters. Several tourists struggled against the current.',
-      hazardType: 'Strong Currents',
-      severity: ReportSeverity.critical,
-      location: 'Calangute Beach, Goa, India',
-      latitude: 15.5439,
-      longitude: 73.7553,
-      status: ReportStatus.pending,
-      timestamp: DateTime.now().subtract(const Duration(hours: 12)),
-      mediaFiles: ['current_pattern.jpg'],
-      adminNotes: null,
-    ),
-    UserReport(
-      id: '4',
-      title: 'Broken Pier Structure',
-      description: 'Old fishing pier has multiple broken planks and exposed nails. Potentially dangerous for fishermen and tourists.',
-      hazardType: 'Infrastructure Damage',
-      severity: ReportSeverity.medium,
-      location: 'Old Pier, Pondicherry, India',
-      latitude: 11.9416,
-      longitude: 79.8083,
-      status: ReportStatus.dismissed,
-      timestamp: DateTime.now().subtract(const Duration(days: 3)),
-      mediaFiles: ['broken_pier_1.jpg', 'broken_pier_2.jpg'],
-      adminNotes: 'Reported to local municipality. Not under maritime jurisdiction.',
-    ),
-  ];
+  List<UserReport> _userReports = [];
+  bool _isLoading = true;
+  String? _error;
 
   List<UserReport> get _filteredReports {
     if (_selectedFilter == 'All') return _userReports;
     return _userReports.where((report) {
-      switch (_selectedFilter) {
-        case 'Pending':
-          return report.status == ReportStatus.pending;
-        case 'Verified':
-          return report.status == ReportStatus.verified;
-        case 'Dismissed':
-          return report.status == ReportStatus.dismissed;
-        case 'Under Review':
-          return report.status == ReportStatus.underReview;
-        default:
-          return true;
-      }
+      return report.status.toLowerCase() == _selectedFilter.toLowerCase();
     }).toList();
   }
 
@@ -104,6 +43,7 @@ class _MyReportsPageState extends State<MyReportsPage>
   void initState() {
     super.initState();
     _initializeAnimations();
+    _loadUserReports();
   }
 
   void _initializeAnimations() {
@@ -114,7 +54,53 @@ class _MyReportsPageState extends State<MyReportsPage>
     _listAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _listAnimationController, curve: Curves.easeOutCubic),
     );
-    _listAnimationController.forward();
+  }
+
+  Future<void> _loadUserReports() async {
+    try {
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) {
+        setState(() {
+          _error = 'Please log in to view your reports';
+          _isLoading = false;
+        });
+        return;
+      }
+
+      setState(() {
+        _isLoading = true;
+        _error = null;
+      });
+
+      final querySnapshot = await _firestore
+          .collection('reports')
+          .where('userId', isEqualTo: currentUser.uid)
+          .orderBy('createdAt', descending: true)
+          .get();
+
+      final reports = querySnapshot.docs.map((doc) {
+        final data = doc.data();
+        return UserReport.fromFirestore(doc.id, data);
+      }).toList();
+
+      setState(() {
+        _userReports = reports;
+        _isLoading = false;
+      });
+
+      _listAnimationController.forward();
+    } catch (e) {
+      print('Error loading user reports: $e');
+      setState(() {
+        _error = 'Failed to load reports: $e';
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _refreshReports() async {
+    HapticFeedback.mediumImpact();
+    await _loadUserReports();
   }
 
   @override
@@ -155,7 +141,7 @@ class _MyReportsPageState extends State<MyReportsPage>
     );
   }
 
-  void _deleteReport(UserReport report) {
+  Future<void> _deleteReport(UserReport report) async {
     Navigator.of(context).pop(); // Close detail modal
     
     showDialog(
@@ -169,33 +155,54 @@ class _MyReportsPageState extends State<MyReportsPage>
             Text('Delete Report'),
           ],
         ),
-        content: Text('Are you sure you want to delete "${report.title}"? This action cannot be undone.'),
+        content: Text('Are you sure you want to delete "${report.description}"? This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            onPressed: () {
-              setState(() {
-                _userReports.removeWhere((r) => r.id == report.id);
-              });
+            onPressed: () async {
               Navigator.of(context).pop();
-              HapticFeedback.mediumImpact();
               
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Row(
-                    children: [
-                      Icon(Icons.check_circle, color: Colors.white, size: 20),
-                      SizedBox(width: 8),
-                      Text('Report deleted successfully'),
-                    ],
-                  ),
-                  backgroundColor: Colors.green,
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
+              try {
+                // Delete from Firestore
+                await _firestore.collection('reports').doc(report.id).delete();
+                
+                // Remove from local list
+                setState(() {
+                  _userReports.removeWhere((r) => r.id == report.id);
+                });
+                
+                HapticFeedback.mediumImpact();
+                
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Row(
+                        children: [
+                          Icon(Icons.check_circle, color: Colors.white, size: 20),
+                          SizedBox(width: 8),
+                          Text('Report deleted successfully'),
+                        ],
+                      ),
+                      backgroundColor: Colors.green,
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                }
+              } catch (e) {
+                print('Error deleting report: $e');
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Failed to delete report: $e'),
+                      backgroundColor: Colors.red,
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                }
+              }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
@@ -217,13 +224,65 @@ class _MyReportsPageState extends State<MyReportsPage>
         children: [
           _buildHeader(),
           _buildFilterSection(),
-          _buildStatsSection(),
+          if (!_isLoading) _buildStatsSection(),
           Expanded(
-            child: _buildReportsList(),
+            child: _buildContent(),
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildContent() {
+    if (_isLoading) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text('Loading your reports...'),
+          ],
+        ),
+      );
+    }
+
+    if (_error != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
+            const SizedBox(height: 16),
+            Text(
+              'Error Loading Reports',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red[700]),
+            ),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Text(
+                _error!,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.red[600]),
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: _loadUserReports,
+              icon: const Icon(Icons.refresh),
+              label: const Text('Retry'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF3B82F6),
+                foregroundColor: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return _buildReportsList();
   }
 
   Widget _buildHeader() {
@@ -324,10 +383,12 @@ class _MyReportsPageState extends State<MyReportsPage>
               itemBuilder: (context, index) {
                 final filter = _filters[index];
                 final isSelected = _selectedFilter == filter;
+                final displayName = filter == 'All' ? 'All' : _getStatusDisplayName(filter);
+                
                 return Container(
                   margin: const EdgeInsets.only(right: 8),
                   child: FilterChip(
-                    label: Text(filter),
+                    label: Text(displayName),
                     selected: isSelected,
                     onSelected: (selected) {
                       setState(() {
@@ -357,9 +418,9 @@ class _MyReportsPageState extends State<MyReportsPage>
   }
 
   Widget _buildStatsSection() {
-    final pendingCount = _userReports.where((r) => r.status == ReportStatus.pending).length;
-    final verifiedCount = _userReports.where((r) => r.status == ReportStatus.verified).length;
-    final dismissedCount = _userReports.where((r) => r.status == ReportStatus.dismissed).length;
+    final pendingCount = _userReports.where((r) => r.status.toLowerCase() == 'pending').length;
+    final verifiedCount = _userReports.where((r) => r.status.toLowerCase() == 'verified').length;
+    final dismissedCount = _userReports.where((r) => r.status.toLowerCase() == 'dismissed').length;
     
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -426,11 +487,7 @@ class _MyReportsPageState extends State<MyReportsPage>
     return FadeTransition(
       opacity: _listAnimation,
       child: RefreshIndicator(
-        onRefresh: () async {
-          // TODO: Implement refresh functionality
-          await Future.delayed(const Duration(seconds: 1));
-          HapticFeedback.mediumImpact();
-        },
+        onRefresh: _refreshReports,
         child: ListView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           itemCount: filteredReports.length,
@@ -492,15 +549,15 @@ class _MyReportsPageState extends State<MyReportsPage>
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: _getSeverityColor(report.severity).withOpacity(0.1),
+                        color: _getStatusColor(report.status).withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        report.hazardType,
+                        _getStatusDisplayName(report.status),
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
-                          color: _getSeverityColor(report.severity),
+                          color: _getStatusColor(report.status),
                         ),
                       ),
                     ),
@@ -524,7 +581,7 @@ class _MyReportsPageState extends State<MyReportsPage>
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            _getStatusText(report.status),
+                            _getStatusDisplayName(report.status),
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
@@ -539,29 +596,34 @@ class _MyReportsPageState extends State<MyReportsPage>
                 
                 const SizedBox(height: 12),
                 
-                // Title
+                // Description (using as title since we don't have a separate title field)
                 Text(
-                  report.title,
+                  report.description.length > 50 
+                      ? '${report.description.substring(0, 50)}...' 
+                      : report.description,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF1F2937),
                   ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 
                 const SizedBox(height: 6),
                 
-                // Description preview
-                Text(
-                  report.description,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                    height: 1.3,
+                // Full description preview
+                if (report.description.length > 50)
+                  Text(
+                    report.description,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                      height: 1.3,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
                 
                 const SizedBox(height: 12),
                 
@@ -581,12 +643,12 @@ class _MyReportsPageState extends State<MyReportsPage>
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    if (report.mediaFiles.isNotEmpty) ...[
+                    if (report.mediaCount > 0) ...[
                       const SizedBox(width: 8),
                       Icon(Icons.photo_library, size: 14, color: Colors.grey[500]),
                       const SizedBox(width: 2),
                       Text(
-                        '${report.mediaFiles.length}',
+                        '${report.mediaCount}',
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey[500],
@@ -633,7 +695,7 @@ class _MyReportsPageState extends State<MyReportsPage>
           Text(
             _selectedFilter == 'All' 
                 ? 'No Reports Yet'
-                : 'No $_selectedFilter Reports',
+                : 'No ${_getStatusDisplayName(_selectedFilter)} Reports',
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -656,42 +718,33 @@ class _MyReportsPageState extends State<MyReportsPage>
     );
   }
 
-  Color _getSeverityColor(ReportSeverity severity) {
-    switch (severity) {
-      case ReportSeverity.low:
-        return Colors.green;
-      case ReportSeverity.medium:
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'pending':
         return Colors.orange;
-      case ReportSeverity.high:
-        return Colors.red;
-      case ReportSeverity.critical:
-        return Colors.red[800]!;
-    }
-  }
-
-  Color _getStatusColor(ReportStatus status) {
-    switch (status) {
-      case ReportStatus.pending:
-        return Colors.orange;
-      case ReportStatus.verified:
+      case 'verified':
         return Colors.green;
-      case ReportStatus.dismissed:
+      case 'dismissed':
         return Colors.grey;
-      case ReportStatus.underReview:
+      case 'under_review':
         return Colors.blue;
+      default:
+        return Colors.grey;
     }
   }
 
-  String _getStatusText(ReportStatus status) {
-    switch (status) {
-      case ReportStatus.pending:
-        return 'PENDING';
-      case ReportStatus.verified:
-        return 'VERIFIED';
-      case ReportStatus.dismissed:
-        return 'DISMISSED';
-      case ReportStatus.underReview:
-        return 'REVIEWING';
+  String _getStatusDisplayName(String status) {
+    switch (status.toLowerCase()) {
+      case 'pending':
+        return 'Pending';
+      case 'verified':
+        return 'Verified';
+      case 'dismissed':
+        return 'Dismissed';
+      case 'under_review':
+        return 'Under Review';
+      default:
+        return status;
     }
   }
 
@@ -759,42 +812,33 @@ class _ReportDetailModalState extends State<ReportDetailModal>
     super.dispose();
   }
 
-  Color _getSeverityColor(ReportSeverity severity) {
-    switch (severity) {
-      case ReportSeverity.low:
-        return Colors.green;
-      case ReportSeverity.medium:
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'pending':
         return Colors.orange;
-      case ReportSeverity.high:
-        return Colors.red;
-      case ReportSeverity.critical:
-        return Colors.red[800]!;
-    }
-  }
-
-  Color _getStatusColor(ReportStatus status) {
-    switch (status) {
-      case ReportStatus.pending:
-        return Colors.orange;
-      case ReportStatus.verified:
+      case 'verified':
         return Colors.green;
-      case ReportStatus.dismissed:
+      case 'dismissed':
         return Colors.grey;
-      case ReportStatus.underReview:
+      case 'under_review':
         return Colors.blue;
+      default:
+        return Colors.grey;
     }
   }
 
-  String _getStatusText(ReportStatus status) {
-    switch (status) {
-      case ReportStatus.pending:
+  String _getStatusDisplayName(String status) {
+    switch (status.toLowerCase()) {
+      case 'pending':
         return 'PENDING REVIEW';
-      case ReportStatus.verified:
+      case 'verified':
         return 'VERIFIED';
-      case ReportStatus.dismissed:
+      case 'dismissed':
         return 'DISMISSED';
-      case ReportStatus.underReview:
+      case 'under_review':
         return 'UNDER REVIEW';
+      default:
+        return status.toUpperCase();
     }
   }
 
@@ -833,12 +877,12 @@ class _ReportDetailModalState extends State<ReportDetailModal>
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: _getSeverityColor(widget.report.severity).withOpacity(0.1),
+                      color: _getStatusColor(widget.report.status).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Icon(
                       Icons.report_rounded,
-                      color: _getSeverityColor(widget.report.severity),
+                      color: _getStatusColor(widget.report.status),
                       size: 20,
                     ),
                   ),
@@ -907,74 +951,41 @@ class _ReportDetailModalState extends State<ReportDetailModal>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Status and Type badges
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: _getStatusColor(widget.report.status).withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: _getStatusColor(widget.report.status).withOpacity(0.3),
+                    // Status badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: _getStatusColor(widget.report.status).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: _getStatusColor(widget.report.status).withOpacity(0.3),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              color: _getStatusColor(widget.report.status),
+                              shape: BoxShape.circle,
                             ),
                           ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                width: 8,
-                                height: 8,
-                                decoration: BoxDecoration(
-                                  color: _getStatusColor(widget.report.status),
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                              const SizedBox(width: 6),
-                              Text(
-                                _getStatusText(widget.report.status),
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: _getStatusColor(widget.report.status),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: _getSeverityColor(widget.report.severity).withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            widget.report.hazardType,
+                          const SizedBox(width: 6),
+                          Text(
+                            _getStatusDisplayName(widget.report.status),
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
-                              color: _getSeverityColor(widget.report.severity),
+                              color: _getStatusColor(widget.report.status),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    
-                    const SizedBox(height: 24),
-                    
-                    // Title
-                    Text(
-                      widget.report.title,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF1F2937),
-                        height: 1.2,
+                        ],
                       ),
                     ),
                     
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 24),
                     
                     // Timestamp
                     Container(
@@ -1017,14 +1028,14 @@ class _ReportDetailModalState extends State<ReportDetailModal>
                     const SizedBox(height: 24),
                     
                     // Media Section
-                    if (widget.report.mediaFiles.isNotEmpty) ...[
+                    if (widget.report.mediaCount > 0) ...[
                       _buildMediaSection(),
                       const SizedBox(height: 24),
                     ],
                     
-                    // Admin Notes Section
-                    if (widget.report.adminNotes != null) ...[
-                      _buildAdminNotesSection(),
+                    // User Reputation Score Section
+                    if (widget.report.userReputationScore != null) ...[
+                      _buildReputationSection(),
                       const SizedBox(height: 24),
                     ],
                     
@@ -1136,32 +1147,6 @@ class _ReportDetailModalState extends State<ReportDetailModal>
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: Open location in maps app
-                    HapticFeedback.lightImpact();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Opening in maps...'),
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.map, size: 18),
-                  label: const Text('View on Map'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF3B82F6),
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                ),
-              ),
             ],
           ),
         ),
@@ -1178,7 +1163,7 @@ class _ReportDetailModalState extends State<ReportDetailModal>
             const Icon(Icons.photo_library, size: 20, color: Color(0xFF3B82F6)),
             const SizedBox(width: 8),
             Text(
-              'Media (${widget.report.mediaFiles.length})',
+              'Media (${widget.report.mediaCount})',
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -1189,110 +1174,57 @@ class _ReportDetailModalState extends State<ReportDetailModal>
         ),
         const SizedBox(height: 12),
         Container(
-          height: 120,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: widget.report.mediaFiles.length,
-            itemBuilder: (context, index) {
-              final mediaFile = widget.report.mediaFiles[index];
-              final isVideo = mediaFile.toLowerCase().contains('.mp4') || 
-                              mediaFile.toLowerCase().contains('.mov');
-              
-              return Container(
-                width: 120,
-                margin: const EdgeInsets.only(right: 12),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey[300]!),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Stack(
-                    children: [
-                      Container(
-                        color: Colors.grey[200],
-                        child: isVideo 
-                            ? const Center(
-                                child: Icon(
-                                  Icons.play_circle_fill,
-                                  size: 40,
-                                  color: Color(0xFF3B82F6),
-                                ),
-                              )
-                            : const Center(
-                                child: Icon(
-                                  Icons.image,
-                                  size: 40,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                      ),
-                      Positioned(
-                        bottom: 8,
-                        left: 8,
-                        right: 8,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.7),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            mediaFile,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
-                      Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () {
-                            HapticFeedback.lightImpact();
-                            // TODO: Open media viewer
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Opening $mediaFile...'),
-                                behavior: SnackBarBehavior.floating,
-                              ),
-                            );
-                          },
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ],
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.grey[50],
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey[200]!),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.image, size: 24, color: Colors.grey[600]),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  '${widget.report.mediaCount} file(s) attached',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.grey[700],
                   ),
                 ),
-              );
-            },
+              ),
+              TextButton(
+                onPressed: () {
+                  // TODO: Show media viewer
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Media viewer coming soon!'),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                },
+                child: const Text('View All'),
+              ),
+            ],
           ),
         ),
       ],
     );
   }
 
-  Widget _buildAdminNotesSection() {
+  Widget _buildReputationSection() {
+    final score = widget.report.userReputationScore!;
+    final stars = (score / 1).round().clamp(0, 5);
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            const Icon(Icons.admin_panel_settings, size: 20, color: Color(0xFF3B82F6)),
+            const Icon(Icons.star_rate, size: 20, color: Color(0xFF3B82F6)),
             const SizedBox(width: 8),
             const Text(
-              'Official Notes',
+              'Reporter Reputation',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -1306,34 +1238,24 @@ class _ReportDetailModalState extends State<ReportDetailModal>
           width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.blue[50],
+            color: Colors.amber[50],
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.blue[200]!),
+            border: Border.all(color: Colors.amber[200]!),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
             children: [
-              Row(
-                children: [
-                  Icon(Icons.info_outline, size: 16, color: Colors.blue[700]),
-                  const SizedBox(width: 6),
-                  Text(
-                    'Administrator Response',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.blue[700],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
+              ...List.generate(5, (index) => Icon(
+                index < stars ? Icons.star : Icons.star_border,
+                color: Colors.amber[600],
+                size: 20,
+              )),
+              const SizedBox(width: 8),
               Text(
-                widget.report.adminNotes!,
+                '${score.toStringAsFixed(1)}/5.0',
                 style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.blue[800],
-                  height: 1.4,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.amber[800],
                 ),
               ),
             ],
@@ -1397,47 +1319,43 @@ class _ReportDetailModalState extends State<ReportDetailModal>
   }
 }
 
-// Data Models
-enum ReportStatus {
-  pending,
-  verified,
-  dismissed,
-  underReview,
-}
-
-enum ReportSeverity {
-  low,
-  medium,
-  high,
-  critical,
-}
-
+// Updated UserReport class to match Firestore structure
 class UserReport {
   final String id;
-  final String title;
   final String description;
-  final String hazardType;
-  final ReportSeverity severity;
   final String location;
   final double latitude;
   final double longitude;
-  final ReportStatus status;
+  final String status;
   final DateTime timestamp;
-  final List<String> mediaFiles;
-  final String? adminNotes;
+  final int mediaCount;
+  final double? userReputationScore;
 
   UserReport({
     required this.id,
-    required this.title,
     required this.description,
-    required this.hazardType,
-    required this.severity,
     required this.location,
     required this.latitude,
     required this.longitude,
     required this.status,
     required this.timestamp,
-    required this.mediaFiles,
-    this.adminNotes,
+    required this.mediaCount,
+    this.userReputationScore,
   });
+
+  factory UserReport.fromFirestore(String id, Map<String, dynamic> data) {
+    return UserReport(
+      id: id,
+      description: data['description'] ?? 'No description',
+      location: data['location']?['address'] ?? 'Unknown location',
+      latitude: (data['location']?['lat'] ?? 0.0).toDouble(),
+      longitude: (data['location']?['lng'] ?? 0.0).toDouble(),
+      status: data['status'] ?? 'pending',
+      timestamp: data['createdAt'] != null 
+          ? (data['createdAt'] as Timestamp).toDate()
+          : DateTime.now(),
+      mediaCount: data['mediaCount'] ?? 0,
+      userReputationScore: data['userReputationScore']?.toDouble(),
+    );
+  }
 }
