@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:coastsentinel/l10n/app_localizations.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -124,7 +125,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           }
         },
         verificationFailed: (FirebaseAuthException e) {
-          setState(() => _error = e.message ?? 'Verification failed');
+          final t = AppLocalizations.of(context)!;
+          setState(() => _error = e.message ?? t.verification_failed);
         },
         codeSent: (String verificationId, int? resendToken) {
           setState(() {
@@ -148,7 +150,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
   Future<void> _verifyCode() async {
     if (_verificationId == null) {
-      setState(() => _error = 'Please request the code first.');
+      setState(() => _error = AppLocalizations.of(context)!.otp_request_first);
       return;
     }
     
@@ -166,7 +168,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       if (!mounted) return;
       _handlePostLogin();
     } on FirebaseAuthException catch (e) {
-      setState(() => _error = e.message ?? 'Invalid code');
+      final t = AppLocalizations.of(context)!;
+      setState(() => _error = e.message ?? t.otp_invalid_code);
       HapticFeedback.heavyImpact();
     } catch (e) {
       setState(() => _error = e.toString());
@@ -189,6 +192,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   Widget _buildOTPBottomSheet() {
     return StatefulBuilder(
       builder: (context, setModalState) {
+        final t = AppLocalizations.of(context)!;
         return Container(
           constraints: BoxConstraints(
             maxHeight: MediaQuery.of(context).size.height * 0.8,
@@ -250,9 +254,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 const SizedBox(height: 24),
                 
                 // Title
-                const Text(
-                  'Enter Verification Code',
-                  style: TextStyle(
+                Text(
+                  t.otp_title,
+                  style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF1F2937),
@@ -263,7 +267,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 
                 // Subtitle
                 Text(
-                  'We sent a 6-digit code to\n${_phoneController.text.trim()}',
+                  t.otp_sent_to(_phoneController.text.trim()),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16,
@@ -294,8 +298,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                       fontWeight: FontWeight.w600,
                       letterSpacing: 8,
                     ),
-                    decoration: const InputDecoration(
-                      hintText: '000000',
+                    decoration: InputDecoration(
+                      hintText: t.otp_hint,
                       hintStyle: TextStyle(
                         color: Colors.grey,
                         letterSpacing: 8,
@@ -326,7 +330,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                       if (_otpController.text.length == 6) {
                         _verifyCode();
                       } else {
-                        setModalState(() => _error = 'Please enter complete 6-digit code');
+                        setModalState(() => _error = t.otp_error_incomplete);
                         HapticFeedback.lightImpact();
                       }
                     },
@@ -347,9 +351,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                               valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           )
-                        : const Text(
-                            'Verify & Continue',
-                            style: TextStyle(
+                        : Text(
+                            t.otp_verify_continue,
+                            style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
                             ),
@@ -367,8 +371,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                   },
                   child: Text(
                     _resendCountdown > 0
-                        ? 'Resend code in ${_resendCountdown}s'
-                        : 'Didn\'t receive code? Resend',
+                        ? t.otp_resend_in(_resendCountdown)
+                        : t.otp_resend_cta,
                     style: TextStyle(
                       color: _resendCountdown > 0 ? Colors.grey : const Color(0xFF3B82F6),
                       fontWeight: FontWeight.w500,
@@ -413,6 +417,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -452,17 +457,17 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const Text(
-                      'Welcome to',
-                      style: TextStyle(
+                    Text(
+                      t.login_welcome_to,
+                      style: const TextStyle(
                         fontSize: 18,
                         color: Colors.grey,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    const Text(
-                      'SENTINEL',
-                      style: TextStyle(
+                    Text(
+                      t.login_title_caps,
+                      style: const TextStyle(
                         fontSize: 36,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF1F2937),
@@ -471,10 +476,10 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Your safety companion for ocean hazard alerts',
-                      style: TextStyle(
+                      t.login_tagline,
+                      style: const TextStyle(
                         fontSize: 16,
-                        color: Colors.grey[600],
+                        color: Colors.grey,
                         height: 1.4,
                       ),
                     ),
@@ -484,9 +489,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 const SizedBox(height: 60),
                 
                 // Phone Input Section
-                const Text(
-                  'Enter your mobile number',
-                  style: TextStyle(
+                Text(
+                  t.login_enter_phone,
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
                     color: Color(0xFF1F2937),
@@ -494,10 +499,10 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'We\'ll send you a verification code via SMS',
-                  style: TextStyle(
+                  t.login_phone_help,
+                  style: const TextStyle(
                     fontSize: 14,
-                    color: Colors.grey[600],
+                    color: Colors.grey,
                   ),
                 ),
                 
@@ -526,7 +531,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                         prefixIcon: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                           child: Text(
-                            '+91',
+                            AppLocalizations.of(context)!.phone_country_code,
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
@@ -534,7 +539,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                             ),
                           ),
                         ),
-                        hintText: '98765 43210',
+                        hintText: AppLocalizations.of(context)!.phone_hint_number,
                         hintStyle: TextStyle(
                           color: Colors.grey[400],
                           fontSize: 18,
@@ -544,11 +549,11 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your mobile number';
+                          return t.login_error_enter_phone;
                         }
                         final cleanedValue = value.replaceAll(' ', '');
                         if (cleanedValue.length < 10) {
-                          return 'Please enter a valid mobile number';
+                          return t.login_error_valid_phone;
                         }
                         return null;
                       },
@@ -587,14 +592,14 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                               valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           )
-                        : const Row(
+                        : Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.sms_outlined, size: 20),
-                              SizedBox(width: 8),
+                              const Icon(Icons.sms_outlined, size: 20),
+                              const SizedBox(width: 8),
                               Text(
-                                'Send OTP',
-                                style: TextStyle(
+                                t.login_send_otp,
+                                style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -640,10 +645,10 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                   child: Column(
                     children: [
                       Text(
-                        'By continuing, you agree to our',
-                        style: TextStyle(
+                        t.login_terms_prefix,
+                        style: const TextStyle(
                           fontSize: 14,
-                          color: Colors.grey[600],
+                          color: Colors.grey,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -652,9 +657,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                         children: [
                           TextButton(
                             onPressed: () {},
-                            child: const Text(
-                              'Terms of Service',
-                              style: TextStyle(
+                            child: Text(
+                              t.login_terms,
+                              style: const TextStyle(
                                 fontSize: 14,
                                 color: Color(0xFF3B82F6),
                                 fontWeight: FontWeight.w500,
@@ -662,17 +667,17 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                             ),
                           ),
                           Text(
-                            ' and ',
-                            style: TextStyle(
+                            t.login_and,
+                            style: const TextStyle(
                               fontSize: 14,
-                              color: Colors.grey[600],
+                              color: Colors.grey,
                             ),
                           ),
                           TextButton(
                             onPressed: () {},
-                            child: const Text(
-                              'Privacy Policy',
-                              style: TextStyle(
+                            child: Text(
+                              t.login_privacy,
+                              style: const TextStyle(
                                 fontSize: 14,
                                 color: Color(0xFF3B82F6),
                                 fontWeight: FontWeight.w500,

@@ -1,6 +1,7 @@
 // home_dashboard_page.dart
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:coastsentinel/l10n/app_localizations.dart';
 
 class HomeDashboardPage extends StatefulWidget {
   const HomeDashboardPage({super.key});
@@ -137,6 +138,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
   }
 
   Widget _buildHeader() {
+    final t = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -157,9 +159,9 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
         children: [
           Row(
             children: [
-              const Text(
-                'SENTINEL',
-                style: TextStyle(
+              Text(
+                t.login_title_caps,
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -185,9 +187,9 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
                       ),
                     ),
                     const SizedBox(width: 6),
-                    const Text(
-                      'Live',
-                      style: TextStyle(
+                    Text(
+                      t.dashboard_live,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
@@ -199,11 +201,11 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
             ],
           ),
           const SizedBox(height: 8),
-          const Row(
+          Row(
             children: [
               Text(
-                'Ocean Safety Dashboard',
-                style: TextStyle(
+                t.dashboard_title,
+                style: const TextStyle(
                   color: Colors.white70,
                   fontSize: 16,
                 ),
@@ -252,15 +254,16 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
   // Removed unused mock marker widget
 
   Widget _buildStatsSection() {
+    final t = AppLocalizations.of(context)!;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
-          _buildStatCard('Active Alerts', '${_mockAlerts.length}', Colors.red),
+          _buildStatCard(t.dashboard_stat_active_alerts, '${_mockAlerts.length}', Colors.red),
           const SizedBox(width: 12),
-          _buildStatCard('Verified', '2', Colors.green),
+          _buildStatCard(t.dashboard_stat_verified, '2', Colors.green),
           const SizedBox(width: 12),
-          _buildStatCard('This Week', '12', Colors.blue),
+          _buildStatCard(t.dashboard_stat_this_week, '12', Colors.blue),
         ],
       ),
     );
@@ -308,14 +311,15 @@ class _HomeDashboardPageState extends State<HomeDashboardPage>
   }
 
   Widget _buildAlertsSection() {
+    final t = AppLocalizations.of(context)!;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Recent Hazard Reports',
-            style: TextStyle(
+          Text(
+            t.dashboard_recent_reports,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Color(0xFF1F2937),

@@ -1,0 +1,131 @@
+{
+  "@@locale": "en",
+  "appTitle": "Sentinel",
+
+  
+  "common_cancel": "Cancel",
+  "common_delete": "Delete",
+  "common_edit": "Edit",
+  "common_retry": "Retry",
+  "common_default": "DEFAULT",
+
+  
+  "language_select_title": "Select Language",
+  "language_select_subtitle": "Choose your preferred language for Sentinel",
+  "language_section_primary": "Primary Languages",
+  "language_section_west": "West Coast Languages",
+  "language_section_east": "East Coast Languages",
+  "language_section_islands": "Island Territories",
+  "language_selected_label": "Selected: {language}",
+  "language_changed_snackbar": "Language changed to {language}",
+  "language_confirm_button": "Confirm Language",
+
+ 
+  "login_welcome_to": "Welcome to",
+  "login_title_caps": "SENTINEL",
+  "login_tagline": "Your safety companion for ocean hazard alerts",
+  "login_enter_phone": "Enter your mobile number",
+  "login_phone_help": "We'll send you a verification code via SMS",
+  "login_send_otp": "Send OTP",
+  "login_terms_prefix": "By continuing, you agree to our",
+  "login_terms": "Terms of Service",
+  "login_and": " and ",
+  "login_privacy": "Privacy Policy",
+  "login_error_enter_phone": "Please enter your mobile number",
+  "login_error_valid_phone": "Please enter a valid mobile number",
+
+  
+  "otp_title": "Enter Verification Code",
+  "otp_sent_to": "We sent a 6-digit code to\n{phone}",
+  "otp_hint": "000000",
+  "otp_verify_continue": "Verify & Continue",
+  "otp_error_incomplete": "Please enter complete 6-digit code",
+  "otp_resend_in": "Resend code in {seconds}s",
+  "otp_resend_cta": "Didn't receive code? Resend",
+  "otp_request_first": "Please request the code first.",
+  "otp_invalid_code": "Invalid code",
+  "verification_failed": "Verification failed",
+  "phone_country_code": "+91",
+  "phone_hint_number": "98765 43210",
+
+  
+  "reports_title": "My Reports",
+  "reports_subtitle": "Track your submitted hazard reports",
+  "reports_count_label": "{count} Reports",
+  "reports_filter_label": "Filter by Status",
+  "status_pending": "Pending",
+  "status_verified": "Verified",
+  "status_dismissed": "Dismissed",
+  "status_under_review": "Under Review",
+
+  
+  "reports_loading": "Loading your reports...",
+  "reports_error_title": "Error Loading Reports",
+  "reports_empty_all": "No Reports Yet",
+  "reports_empty_filtered": "No {status} Reports",
+  "reports_empty_all_sub": "Start reporting ocean hazards to help keep our waters safe",
+  "reports_empty_filtered_sub": "Try selecting a different filter to view reports",
+
+  
+  "reports_stat_pending": "Pending",
+  "reports_stat_verified": "Verified",
+  "reports_stat_dismissed": "Dismissed",
+
+  
+  "time_just_now": "Just now",
+  "time_minutes_ago": "{minutes}m ago",
+  "time_hours_ago": "{hours}h ago",
+  "time_days_ago": "{days}d ago",
+  "time_on_date": "{day}/{month}/{year}",
+
+  
+  "report_details_title": "Report Details",
+  "report_menu_edit": "Edit Report",
+  "report_menu_delete": "Delete Report",
+  "report_reported_on": "Reported on {date}",
+  "report_section_description": "Description",
+  "report_section_location": "Location",
+  "report_section_media": "Media ({count})",
+  "report_section_reputation": "Reporter Reputation",
+  "report_media_view_all": "View All",
+  "report_lat_label": "Lat:",
+  "report_lng_label": "Lng:",
+  "report_action_edit": "Edit Report",
+  "report_action_delete": "Delete Report",
+
+  
+  "report_delete_title": "Delete Report",
+  "report_delete_confirm": "Are you sure you want to delete \"{title}\"? This action cannot be undone.",
+  "report_deleted_success": "Report deleted successfully",
+  "report_delete_failed": "Failed to delete report: {error}",
+  "report_edit_coming": "Edit functionality coming soon!",
+  "report_media_coming": "Media viewer coming soon!"
+  ,
+  
+  "nav_home": "Home",
+  "nav_alerts": "Alerts",
+  "nav_reports": "Reports",
+  "nav_profile": "Profile",
+  
+  "onboard_complete_your": "Complete Your",
+  "onboard_profile_setup": "Profile Setup",
+  "onboard_header_subtitle": "Help us personalize your experience and keep you safe",
+  "onboard_full_name_label": "Full Name",
+  "onboard_full_name_hint": "Enter your full name",
+  "onboard_full_name_error": "Please enter your name",
+  "onboard_email_label": "Email Address",
+  "onboard_email_hint": "Enter your email address",
+  "onboard_email_error_empty": "Please enter your email",
+  "onboard_email_error_invalid": "Please enter a valid email address",
+  "onboard_trust_title": "Trust Score System",
+  "onboard_trust_desc": "Your reports will be evaluated based on report quality, location accuracy, and reporting history. Build your reputation by submitting detailed, accurate reports.",
+  "onboard_continue": "Complete Setup",
+  "onboard_footer_secure": "Your information is secure and encrypted",
+  
+  "dashboard_live": "Live",
+  "dashboard_title": "Ocean Safety Dashboard",
+  "dashboard_stat_active_alerts": "Active Alerts",
+  "dashboard_stat_verified": "Verified",
+  "dashboard_stat_this_week": "This Week",
+  "dashboard_recent_reports": "Recent Hazard Reports"
+}

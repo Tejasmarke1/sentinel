@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:coastsentinel/l10n/app_localizations.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -76,10 +77,8 @@ class _OnboardingPageState extends State<OnboardingPage>
     }
   }
 
-
   Future<void> _saveUserData() async {
     if (!_formKey.currentState!.validate()) return;
-
 
     setState(() {
       _isLoading = true;
@@ -90,13 +89,32 @@ class _OnboardingPageState extends State<OnboardingPage>
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) throw 'User not authenticated';
 
+      // Simplified user data with only essential trust score fields
       final userData = {
+        // Basic profile information
         'name': _nameController.text.trim(),
         'email': _emailController.text.trim(),
-        'mobileNo': user.phoneNumber ?? '',
-        'reputation_score': 0,
+        'mobile_number': user.phoneNumber ?? '',
+        
+        // KYC verification - simplified
+        'mobile_verified': user.phoneNumber != null && user.phoneNumber!.isNotEmpty,
+        'id_verified': true, // Simplified - treat as verified
+        
+        // Device verification - simplified  
+        'device_verified': true, // Simplified - treat as verified
+        'device_registered_at': FieldValue.serverTimestamp(),
+        
+        // User reputation and statistics
+        'reputation_score': 50.0, // Starting score out of 100 - gives better initial trust
+        'totalReports': 0,
+        'verifiedReports': 0,
+        'lastReportAt': null,
+        'lastTrustScore': null,
+        
+        // Account metadata
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
+        'accountStatus': 'active',
       };
 
       await FirebaseFirestore.instance
@@ -158,6 +176,11 @@ class _OnboardingPageState extends State<OnboardingPage>
                     
                     // Email Input
                     _buildEmailInput(),
+                    
+                    const SizedBox(height: 24),
+                    
+                    // Trust Score Info Card
+                    _buildTrustScoreInfo(),
                     
                     const SizedBox(height: 32),
                     
@@ -245,7 +268,6 @@ class _OnboardingPageState extends State<OnboardingPage>
     );
   }
 
-
   Widget _buildNameInput() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -306,6 +328,93 @@ class _OnboardingPageState extends State<OnboardingPage>
     );
   }
 
+  Widget _buildTrustScoreInfo() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            const Color(0xFF3B82F6).withOpacity(0.1),
+            const Color(0xFF06B6D4).withOpacity(0.1),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF3B82F6).withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.security,
+                  size: 18,
+                  color: Color(0xFF3B82F6),
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Text(
+                'Trust Score System',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF1F2937),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Your reports will be evaluated based on report quality, location accuracy, and reporting history. Build your reputation by submitting detailed, accurate reports.',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey[600],
+              height: 1.4,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTrustIndicator(String label, bool isVerified) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: isVerified ? Colors.green[50] : Colors.grey[100],
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: isVerified ? Colors.green[300]! : Colors.grey[300]!,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            isVerified ? Icons.check_circle : Icons.radio_button_unchecked,
+            size: 12,
+            color: isVerified ? Colors.green[600] : Colors.grey[500],
+          ),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: isVerified ? Colors.green[600] : Colors.grey[600],
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildTextFormField({
     required TextEditingController controller,

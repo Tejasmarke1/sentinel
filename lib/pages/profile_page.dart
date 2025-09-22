@@ -1189,7 +1189,7 @@ class _NotificationSettingsModalState extends State<NotificationSettingsModal> {
           Switch(
             value: value,
             onChanged: isImportant ? null : onChanged, // Disable critical alerts toggle
-            activeColor: const Color(0xFF3B82F6),
+            activeThumbColor: const Color(0xFF3B82F6),
           ),
         ],
       ),
@@ -1432,7 +1432,7 @@ class _PrivacySettingsModalState extends State<PrivacySettingsModal> {
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: const Color(0xFF3B82F6),
+            activeThumbColor: const Color(0xFF3B82F6),
           ),
         ],
       ),
