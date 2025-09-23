@@ -10,9 +10,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:exif/exif.dart';
 import 'dart:io';
 import 'dart:math';
-import 'dart:typed_data';
 import 'map_pinning_page.dart';
 import 'trust_score_calculator.dart'; // Import the trust score calculator
+import '../l10n/app_localizations.dart';
 
 class CreateReportPage extends StatefulWidget {
   const CreateReportPage({super.key});
@@ -89,7 +89,7 @@ class _CreateReportPageState extends State<CreateReportPage>
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('${media.length} file(s) attached successfully'),
+              content: Text(AppLocalizations.of(context)!.create_report_media_attached_success(media.length)),
               backgroundColor: Colors.green,
               behavior: SnackBarBehavior.floating,
               margin: const EdgeInsets.all(16),
@@ -102,7 +102,7 @@ class _CreateReportPageState extends State<CreateReportPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to attach media: $e'),
+            content: Text(AppLocalizations.of(context)!.create_report_media_attach_failed(e)),
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
             margin: const EdgeInsets.all(16),
@@ -133,12 +133,12 @@ class _CreateReportPageState extends State<CreateReportPage>
         print('Permission after request: $permission');
         
         if (permission == LocationPermission.denied) {
-          throw 'Location permission denied by user. Please grant location access to use this feature.';
+          throw AppLocalizations.of(context)!.create_report_location_permission_denied;
         }
       }
 
       if (permission == LocationPermission.deniedForever) {
-        throw 'Location permissions are permanently denied. Please enable location access in your device settings.';
+        throw AppLocalizations.of(context)!.create_report_location_permission_denied_forever;
       }
 
       // Check if location services are enabled
@@ -146,7 +146,7 @@ class _CreateReportPageState extends State<CreateReportPage>
       print('Location services enabled: $serviceEnabled');
       
       if (!serviceEnabled) {
-        throw 'Location services are disabled. Please enable location services in your device settings.';
+        throw AppLocalizations.of(context)!.create_report_location_services_disabled;
       }
 
       // Get current position with fallback strategy
@@ -185,14 +185,14 @@ class _CreateReportPageState extends State<CreateReportPage>
             if (position != null) {
               print('Last known position obtained: ${position.latitude}, ${position.longitude}');
             } else {
-              throw 'Unable to determine location. Please try again or select location manually on the map.';
+              throw AppLocalizations.of(context)!.create_report_location_unable_determine;
             }
           }
         }
       }
 
       final currentPosition = position;
-      String address = 'Current Location';
+      String address = AppLocalizations.of(context)!.create_report_location_current;
 
       // Try to get address from coordinates
       try {
@@ -222,12 +222,15 @@ class _CreateReportPageState extends State<CreateReportPage>
             if (place.country?.isNotEmpty == true) place.country,
           ].where((part) => part != null && part.isNotEmpty).toList();
           
-          address = addressParts.isNotEmpty ? addressParts.join(', ') : 'Current Location';
+          address = addressParts.isNotEmpty ? addressParts.join(', ') : AppLocalizations.of(context)!.create_report_location_current;
         }
       } catch (e) {
         print('Failed to get address from coordinates: $e');
         // Continue with coordinates-based fallback
-        address = 'Location: ${currentPosition.latitude.toStringAsFixed(6)}, ${currentPosition.longitude.toStringAsFixed(6)}';
+        address = AppLocalizations.of(context)!.create_report_location_coordinates(
+          currentPosition.latitude.toStringAsFixed(6), 
+          currentPosition.longitude.toStringAsFixed(6)
+        );
       }
 
       // Update state and UI
@@ -261,12 +264,12 @@ class _CreateReportPageState extends State<CreateReportPage>
         HapticFeedback.lightImpact();
         
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Row(
               children: [
                 Icon(Icons.check_circle, color: Colors.white, size: 20),
                 SizedBox(width: 8),
-                Text('Current location captured successfully!'),
+                Text(AppLocalizations.of(context)!.create_report_location_captured_success),
               ],
             ),
             backgroundColor: Colors.green,
@@ -324,7 +327,7 @@ class _CreateReportPageState extends State<CreateReportPage>
       await Future.delayed(const Duration(milliseconds: 50));
       
       if (mounted) {
-        _locationController.text = result['address'] ?? 'Selected location';
+        _locationController.text = result['address'] ?? AppLocalizations.of(context)!.create_report_selected_location;
         _locationController.selection = TextSelection.fromPosition(
           TextPosition(offset: _locationController.text.length),
         );
@@ -533,8 +536,8 @@ class _CreateReportPageState extends State<CreateReportPage>
     
     if (_latitude == null || _longitude == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please add a location for the report'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.create_report_submit_location_required),
           backgroundColor: Colors.orange,
           behavior: SnackBarBehavior.floating,
         ),
@@ -545,8 +548,8 @@ class _CreateReportPageState extends State<CreateReportPage>
     final currentUser = _auth.currentUser;
     if (currentUser == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please log in to submit a report'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.create_report_submit_login_required),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
         ),
@@ -595,7 +598,7 @@ class _CreateReportPageState extends State<CreateReportPage>
         'location': {
           'lat': _latitude!,
           'lng': _longitude!,
-          'address': _address ?? 'Unknown location',
+          'address': _address ?? AppLocalizations.of(context)!.create_report_unknown_location,
         },
         'media': mediaData,
         'mediaCount': mediaData.length,
@@ -678,14 +681,14 @@ class _CreateReportPageState extends State<CreateReportPage>
               children: [
                 const Icon(Icons.error, color: Colors.white, size: 20),
                 const SizedBox(width: 8),
-                Expanded(child: Text('Failed to submit report: $e')),
+                Expanded(child: Text(AppLocalizations.of(context)!.create_report_submit_failed(e))),
               ],
             ),
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
             duration: const Duration(seconds: 4),
             action: SnackBarAction(
-              label: 'Retry',
+              label: AppLocalizations.of(context)!.create_report_submit_retry,
               textColor: Colors.white,
               onPressed: _submitReport,
             ),
@@ -731,29 +734,29 @@ class _CreateReportPageState extends State<CreateReportPage>
     final isAutoApproved = trustScore >= 0.8;
     
     Color bgColor = Colors.green;
-    String message = 'Report submitted successfully!';
+    String message = AppLocalizations.of(context)!.create_report_success_title;
     String subMessage = '';
     IconData icon = Icons.check_circle;
     
     if (isAutoApproved) {
       bgColor = const Color(0xFF10B981);
-      message = 'Report auto-approved and published!';
-      subMessage = 'High trust score (${(trustScore * 100).toInt()}%)';
+      message = AppLocalizations.of(context)!.create_report_success_auto_approved;
+      subMessage = AppLocalizations.of(context)!.create_report_success_auto_approved_sub((trustScore * 100).toInt());
       icon = Icons.verified;
     } else if (trustLevel == 'medium') {
       bgColor = const Color(0xFF3B82F6);
-      message = 'Report submitted for review';
-      subMessage = 'Normal processing expected';
+      message = AppLocalizations.of(context)!.create_report_success_review;
+      subMessage = AppLocalizations.of(context)!.create_report_success_review_normal;
       icon = Icons.pending;
     } else if (trustLevel == 'low') {
       bgColor = const Color(0xFFF59E0B);
-      message = 'Report submitted for review';
-      subMessage = 'Additional verification may be required';
+      message = AppLocalizations.of(context)!.create_report_success_review;
+      subMessage = AppLocalizations.of(context)!.create_report_success_review_verification;
       icon = Icons.schedule;
     } else {
       bgColor = const Color(0xFF6B7280);
-      message = 'Report submitted for manual review';
-      subMessage = 'Detailed verification required';
+      message = AppLocalizations.of(context)!.create_report_success_manual_review;
+      subMessage = AppLocalizations.of(context)!.create_report_success_manual_review_sub;
       icon = Icons.hourglass_empty;
     }
 
@@ -779,7 +782,7 @@ class _CreateReportPageState extends State<CreateReportPage>
             ],
             const SizedBox(height: 4),
             Text(
-              'Title: $reportTitle',
+              AppLocalizations.of(context)!.create_report_success_title_label(reportTitle),
               style: const TextStyle(fontSize: 12, color: Colors.white70),
             ),
           ],
@@ -838,12 +841,12 @@ class _CreateReportPageState extends State<CreateReportPage>
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Create Hazard Report',
+                          AppLocalizations.of(context)!.create_report_title,
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -851,7 +854,7 @@ class _CreateReportPageState extends State<CreateReportPage>
                           ),
                         ),
                         Text(
-                          'Help keep our oceans safe',
+                          AppLocalizations.of(context)!.create_report_subtitle,
                           style: TextStyle(
                             color: Colors.grey,
                             fontSize: 14,
@@ -881,19 +884,19 @@ class _CreateReportPageState extends State<CreateReportPage>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Description Input
-                      _buildSectionTitle('Description *'),
+                      _buildSectionTitle(AppLocalizations.of(context)!.create_report_description_label),
                       _buildDescriptionField(),
                       
                       const SizedBox(height: 24),
                       
                       // Location Section
-                      _buildSectionTitle('Location *'),
+                      _buildSectionTitle(AppLocalizations.of(context)!.create_report_location_label),
                       _buildLocationSection(),
                       
                       const SizedBox(height: 24),
                       
                       // Media Attachment Section
-                      _buildSectionTitle('Attach Media'),
+                      _buildSectionTitle(AppLocalizations.of(context)!.create_report_attach_media),
                       _buildMediaSection(),
                       
                       const SizedBox(height: 32),
@@ -936,17 +939,17 @@ class _CreateReportPageState extends State<CreateReportPage>
         controller: _descriptionController,
         maxLines: 4,
         maxLength: 500,
-        decoration: const InputDecoration(
-          hintText: 'Describe the ocean hazard you observed...',
+        decoration: InputDecoration(
+          hintText: AppLocalizations.of(context)!.create_report_description_hint,
           border: InputBorder.none,
           contentPadding: EdgeInsets.all(16),
         ),
         validator: (value) {
           if (value == null || value.trim().isEmpty) {
-            return 'Please provide a description';
+            return AppLocalizations.of(context)!.create_report_description_error_empty;
           }
           if (value.trim().length < 10) {
-            return 'Description must be at least 10 characters';
+            return AppLocalizations.of(context)!.create_report_description_error_min_length;
           }
           return null;
         },
@@ -966,8 +969,8 @@ class _CreateReportPageState extends State<CreateReportPage>
           ),
           child: TextFormField(
             controller: _locationController,
-            decoration: const InputDecoration(
-              hintText: 'Enter location or use buttons below',
+            decoration: InputDecoration(
+              hintText: AppLocalizations.of(context)!.create_report_location_hint,
               prefixIcon: Icon(Icons.location_on_outlined),
               border: InputBorder.none,
               contentPadding: EdgeInsets.all(16),
@@ -975,7 +978,7 @@ class _CreateReportPageState extends State<CreateReportPage>
             validator: (value) {
               if ((value == null || value.trim().isEmpty) && 
                   (_latitude == null || _longitude == null)) {
-                return 'Please add a location';
+                return AppLocalizations.of(context)!.create_report_location_error;
               }
               return null;
             },
@@ -1009,7 +1012,7 @@ class _CreateReportPageState extends State<CreateReportPage>
                         ),
                       )
                     : const Icon(Icons.my_location, size: 18),
-                label: Text(_isGettingLocation ? 'Getting...' : 'Current Location'),
+                label: Text(_isGettingLocation ? AppLocalizations.of(context)!.create_report_getting_location : AppLocalizations.of(context)!.create_report_current_location),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _isGettingLocation ? Colors.grey[100] : Colors.blue[50],
                   foregroundColor: _isGettingLocation ? Colors.grey[600] : const Color(0xFF3B82F6),
@@ -1026,7 +1029,7 @@ class _CreateReportPageState extends State<CreateReportPage>
               child: ElevatedButton.icon(
                 onPressed: _openMapPinning,
                 icon: const Icon(Icons.map_outlined, size: 18),
-                label: const Text('Pin on Map'),
+                label: Text(AppLocalizations.of(context)!.create_report_pin_on_map),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF3B82F6),
                   foregroundColor: Colors.white,
@@ -1057,8 +1060,8 @@ class _CreateReportPageState extends State<CreateReportPage>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Location selected successfully',
+                      Text(
+                        AppLocalizations.of(context)!.create_report_location_selected,
                         style: TextStyle(
                           color: Colors.green,
                           fontWeight: FontWeight.w500,
@@ -1079,7 +1082,10 @@ class _CreateReportPageState extends State<CreateReportPage>
                       ],
                       const SizedBox(height: 4),
                       Text(
-                        'Coordinates: ${_latitude!.toStringAsFixed(6)}, ${_longitude!.toStringAsFixed(6)}',
+                        AppLocalizations.of(context)!.create_report_coordinates(
+                          _latitude!.toStringAsFixed(6), 
+                          _longitude!.toStringAsFixed(6)
+                        ),
                         style: TextStyle(
                           color: Colors.green[600],
                           fontSize: 10,
@@ -1105,7 +1111,7 @@ class _CreateReportPageState extends State<CreateReportPage>
           child: ElevatedButton.icon(
             onPressed: _attachMedia,
             icon: const Icon(Icons.attach_file, size: 18),
-            label: const Text('Attach Photos/Videos'),
+            label: Text(AppLocalizations.of(context)!.create_report_attach_photos_videos),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.grey[50],
               foregroundColor: Colors.grey[700],
@@ -1204,7 +1210,7 @@ class _CreateReportPageState extends State<CreateReportPage>
           ),
         ),
         child: _isSubmitting
-            ? const Row(
+            ? Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
@@ -1216,14 +1222,14 @@ class _CreateReportPageState extends State<CreateReportPage>
                     ),
                   ),
                   SizedBox(width: 12),
-                  Text('Submitting...'),
+                  Text(AppLocalizations.of(context)!.create_report_submitting),
                 ],
               )
-            : const Row(
+            : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Submit Report',
+                    AppLocalizations.of(context)!.create_report_submit,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,

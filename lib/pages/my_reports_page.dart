@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:coastsentinel/l10n/app_localizations.dart';
 
 class MyReportsPage extends StatefulWidget {
   const MyReportsPage({super.key});
@@ -11,9 +12,8 @@ class MyReportsPage extends StatefulWidget {
   State<MyReportsPage> createState() => _MyReportsPageState();
 }
 
-class _MyReportsPageState extends State<MyReportsPage> 
+class _MyReportsPageState extends State<MyReportsPage>
     with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
-  
   @override
   bool get wantKeepAlive => true;
 
@@ -22,8 +22,14 @@ class _MyReportsPageState extends State<MyReportsPage>
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   String _selectedFilter = 'All';
-  final List<String> _filters = ['All', 'pending', 'verified', 'rejected', 'under_review'];
-  
+  final List<String> _filters = [
+    'All',
+    'pending',
+    'verified',
+    'rejected',
+    'under_review'
+  ];
+
   late AnimationController _listAnimationController;
   late Animation<double> _listAnimation;
 
@@ -51,7 +57,8 @@ class _MyReportsPageState extends State<MyReportsPage>
       vsync: this,
     );
     _listAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _listAnimationController, curve: Curves.easeOutCubic),
+      CurvedAnimation(
+          parent: _listAnimationController, curve: Curves.easeOutCubic),
     );
   }
 
@@ -71,6 +78,8 @@ class _MyReportsPageState extends State<MyReportsPage>
         _error = null;
       });
 
+      // NOTE: This query requires a composite index in Firestore:
+      // Collection: reports, Fields: userId (asc), createdAt (desc)
       final querySnapshot = await _firestore
           .collection('reports')
           .where('userId', isEqualTo: currentUser.uid)
@@ -123,7 +132,7 @@ class _MyReportsPageState extends State<MyReportsPage>
 
   void _editReport(UserReport report) {
     Navigator.of(context).pop(); // Close detail modal
-    
+
     // TODO: Navigate to edit report page
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -142,7 +151,7 @@ class _MyReportsPageState extends State<MyReportsPage>
 
   Future<void> _deleteReport(UserReport report) async {
     Navigator.of(context).pop(); // Close detail modal
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -154,7 +163,8 @@ class _MyReportsPageState extends State<MyReportsPage>
             Text('Delete Report'),
           ],
         ),
-        content: Text('Are you sure you want to delete "${report.reportTitle}"? This action cannot be undone.'),
+        content: Text(
+            'Are you sure you want to delete "${report.reportTitle}"? This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -163,24 +173,25 @@ class _MyReportsPageState extends State<MyReportsPage>
           ElevatedButton(
             onPressed: () async {
               Navigator.of(context).pop();
-              
+
               try {
                 // Delete from Firestore
                 await _firestore.collection('reports').doc(report.id).delete();
-                
+
                 // Remove from local list
                 setState(() {
                   _userReports.removeWhere((r) => r.id == report.id);
                 });
-                
+
                 HapticFeedback.mediumImpact();
-                
+
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Row(
                         children: [
-                          Icon(Icons.check_circle, color: Colors.white, size: 20),
+                          Icon(Icons.check_circle,
+                              color: Colors.white, size: 20),
                           SizedBox(width: 8),
                           Text('Report deleted successfully'),
                         ],
@@ -217,7 +228,7 @@ class _MyReportsPageState extends State<MyReportsPage>
   @override
   Widget build(BuildContext context) {
     super.build(context); // Required for AutomaticKeepAliveClientMixin
-    
+
     return SafeArea(
       child: Column(
         children: [
@@ -233,14 +244,15 @@ class _MyReportsPageState extends State<MyReportsPage>
   }
 
   Widget _buildContent() {
+    final loc = AppLocalizations.of(context)!;
     if (_isLoading) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 16),
-            Text('Loading your reports...'),
+            const CircularProgressIndicator(),
+            const SizedBox(height: 16),
+            Text(loc.reports_loading),
           ],
         ),
       );
@@ -254,8 +266,11 @@ class _MyReportsPageState extends State<MyReportsPage>
             Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
             const SizedBox(height: 16),
             Text(
-              'Error Loading Reports',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red[700]),
+              loc.reports_error_title,
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red[700]),
             ),
             const SizedBox(height: 8),
             Padding(
@@ -270,7 +285,7 @@ class _MyReportsPageState extends State<MyReportsPage>
             ElevatedButton.icon(
               onPressed: _loadUserReports,
               icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
+              label: Text(loc.common_retry),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF3B82F6),
                 foregroundColor: Colors.white,
@@ -285,6 +300,7 @@ class _MyReportsPageState extends State<MyReportsPage>
   }
 
   Widget _buildHeader() {
+    final loc = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
       decoration: BoxDecoration(
@@ -328,13 +344,13 @@ class _MyReportsPageState extends State<MyReportsPage>
                 ),
               ),
               const SizedBox(width: 16),
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'My Reports',
-                      style: TextStyle(
+                      loc.reports_title,
+                      style: const TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
@@ -342,8 +358,8 @@ class _MyReportsPageState extends State<MyReportsPage>
                       ),
                     ),
                     Text(
-                      'Track your submitted hazard reports',
-                      style: TextStyle(
+                      loc.reports_subtitle,
+                      style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 15,
                         fontWeight: FontWeight.w400,
@@ -353,7 +369,8 @@ class _MyReportsPageState extends State<MyReportsPage>
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(25),
@@ -375,7 +392,7 @@ class _MyReportsPageState extends State<MyReportsPage>
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      '${_userReports.length} Reports',
+                      loc.reports_count_label(_userReports.length),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 13,
@@ -393,14 +410,15 @@ class _MyReportsPageState extends State<MyReportsPage>
   }
 
   Widget _buildFilterSection() {
+    final loc = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Filter by Status',
-            style: TextStyle(
+          Text(
+            loc.reports_filter_label,
+            style: const TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.w600,
               color: Color(0xFF1F2937),
@@ -415,8 +433,10 @@ class _MyReportsPageState extends State<MyReportsPage>
               itemBuilder: (context, index) {
                 final filter = _filters[index];
                 final isSelected = _selectedFilter == filter;
-                final displayName = filter == 'All' ? 'All' : _getStatusDisplayName(filter);
-                
+                final displayName = filter == 'All'
+                    ? loc.common_default
+                    : _getStatusDisplayName(filter, loc);
+
                 return Container(
                   margin: const EdgeInsets.only(right: 10),
                   child: Material(
@@ -431,25 +451,29 @@ class _MyReportsPageState extends State<MyReportsPage>
                       borderRadius: BorderRadius.circular(20),
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
-                          color: isSelected 
-                              ? const Color(0xFF3B82F6) 
+                          color: isSelected
+                              ? const Color(0xFF3B82F6)
                               : Colors.grey[100],
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: isSelected 
-                                ? const Color(0xFF3B82F6) 
+                            color: isSelected
+                                ? const Color(0xFF3B82F6)
                                 : Colors.grey[300]!,
                             width: 1.5,
                           ),
-                          boxShadow: isSelected ? [
-                            BoxShadow(
-                              color: const Color(0xFF3B82F6).withOpacity(0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ] : null,
+                          boxShadow: isSelected
+                              ? [
+                                  BoxShadow(
+                                    color: const Color(0xFF3B82F6)
+                                        .withOpacity(0.3),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ]
+                              : null,
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -465,8 +489,12 @@ class _MyReportsPageState extends State<MyReportsPage>
                             Text(
                               displayName,
                               style: TextStyle(
-                                color: isSelected ? Colors.white : Colors.grey[700],
-                                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                                color: isSelected
+                                    ? Colors.white
+                                    : Colors.grey[700],
+                                fontWeight: isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.w500,
                                 fontSize: 13,
                               ),
                             ),
@@ -485,22 +513,32 @@ class _MyReportsPageState extends State<MyReportsPage>
   }
 
   Widget _buildStatsSection() {
-    final pendingCount = _userReports.where((r) => r.status.toLowerCase() == 'pending').length;
-    final verifiedCount = _userReports.where((r) => r.status.toLowerCase() == 'verified').length;
-    final rejectedCount = _userReports.where((r) => r.status.toLowerCase() == 'rejected').length;
-    final underReviewCount = _userReports.where((r) => r.status.toLowerCase() == 'under_review').length;
-    
+    final loc = AppLocalizations.of(context)!;
+    final pendingCount =
+        _userReports.where((r) => r.status.toLowerCase() == 'pending').length;
+    final verifiedCount =
+        _userReports.where((r) => r.status.toLowerCase() == 'verified').length;
+    final rejectedCount =
+        _userReports.where((r) => r.status.toLowerCase() == 'rejected').length;
+    final underReviewCount = _userReports
+        .where((r) => r.status.toLowerCase() == 'under_review')
+        .length;
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
-          _buildStatCard('Pending', '$pendingCount', const Color(0xFFFF8C00), Icons.pending_actions),
+          _buildStatCard(loc.reports_stat_pending, '$pendingCount',
+              const Color(0xFFFF8C00), Icons.pending_actions),
           const SizedBox(width: 8),
-          _buildStatCard('Verified', '$verifiedCount', const Color(0xFF10B981), Icons.verified),
+          _buildStatCard(loc.reports_stat_verified, '$verifiedCount',
+              const Color(0xFF10B981), Icons.verified),
           const SizedBox(width: 8),
-          _buildStatCard('Rejected', '$rejectedCount', const Color(0xFFEF4444), Icons.cancel),
+          _buildStatCard(loc.reports_stat_dismissed, '$rejectedCount',
+              const Color(0xFFEF4444), Icons.cancel),
           const SizedBox(width: 8),
-          _buildStatCard('Review', '$underReviewCount', const Color(0xFF3B82F6), Icons.rate_review),
+          _buildStatCard(loc.status_under_review, '$underReviewCount',
+              const Color(0xFF3B82F6), Icons.rate_review),
         ],
       ),
     );
@@ -555,7 +593,7 @@ class _MyReportsPageState extends State<MyReportsPage>
 
   Widget _buildReportsList() {
     final filteredReports = _filteredReports;
-    
+
     if (filteredReports.isEmpty) {
       return _buildEmptyState();
     }
@@ -589,6 +627,8 @@ class _MyReportsPageState extends State<MyReportsPage>
   }
 
   Widget _buildReportCard(UserReport report) {
+    // Access the localization instance from the context
+    final loc = AppLocalizations.of(context)!;
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -619,16 +659,18 @@ class _MyReportsPageState extends State<MyReportsPage>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header row with status and priority
+                // Header row with status
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         color: _getStatusColor(report.status).withOpacity(0.15),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: _getStatusColor(report.status).withOpacity(0.3),
+                          color:
+                              _getStatusColor(report.status).withOpacity(0.3),
                           width: 1,
                         ),
                       ),
@@ -645,7 +687,8 @@ class _MyReportsPageState extends State<MyReportsPage>
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            _getStatusDisplayName(report.status),
+                            // CORRECTED: Passed the required 'loc' argument
+                            _getStatusDisplayName(report.status, loc),
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
@@ -655,27 +698,11 @@ class _MyReportsPageState extends State<MyReportsPage>
                         ],
                       ),
                     ),
-                    const Spacer(),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: _getPriorityColor(report.priorityLevel).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        _getPriorityDisplayName(report.priorityLevel),
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: _getPriorityColor(report.priorityLevel),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 16),
-                
+
                 // Report title and type
                 Row(
                   children: [
@@ -720,9 +747,9 @@ class _MyReportsPageState extends State<MyReportsPage>
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 12),
-                
+
                 // Description preview
                 Text(
                   report.description,
@@ -734,9 +761,9 @@ class _MyReportsPageState extends State<MyReportsPage>
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                
+
                 const SizedBox(height: 16),
-                
+
                 // Footer with location, media, and time
                 Row(
                   children: [
@@ -757,7 +784,8 @@ class _MyReportsPageState extends State<MyReportsPage>
                     if (report.mediaCount > 0) ...[
                       const SizedBox(width: 12),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
                           color: Colors.blue[50],
                           borderRadius: BorderRadius.circular(10),
@@ -765,7 +793,8 @@ class _MyReportsPageState extends State<MyReportsPage>
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.photo_library, size: 14, color: Colors.blue[600]),
+                            Icon(Icons.photo_library,
+                                size: 14, color: Colors.blue[600]),
                             const SizedBox(width: 4),
                             Text(
                               '${report.mediaCount}',
@@ -799,6 +828,7 @@ class _MyReportsPageState extends State<MyReportsPage>
   }
 
   Widget _buildEmptyState() {
+    final loc = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -823,9 +853,10 @@ class _MyReportsPageState extends State<MyReportsPage>
           ),
           const SizedBox(height: 24),
           Text(
-            _selectedFilter == 'All' 
-                ? 'No Reports Yet'
-                : 'No ${_getStatusDisplayName(_selectedFilter)} Reports',
+            _selectedFilter == 'All'
+                ? loc.reports_empty_all
+                : loc.reports_empty_filtered(
+                    _getStatusDisplayName(_selectedFilter, loc)),
             style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -837,8 +868,8 @@ class _MyReportsPageState extends State<MyReportsPage>
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Text(
               _selectedFilter == 'All'
-                  ? 'Start reporting ocean hazards to help keep our waters safe for everyone'
-                  : 'Try selecting a different filter to view your reports',
+                  ? loc.reports_empty_all_sub
+                  : loc.reports_empty_filtered_sub,
               style: TextStyle(
                 fontSize: 15,
                 color: Colors.grey[600],
@@ -867,52 +898,20 @@ class _MyReportsPageState extends State<MyReportsPage>
     }
   }
 
-  Color _getPriorityColor(String priority) {
-    switch (priority.toLowerCase()) {
-      case 'very_high':
-        return const Color(0xFFDC2626);
-      case 'high':
-        return const Color(0xFFEA580C);
-      case 'medium':
-        return const Color(0xFFD97706);
-      case 'low':
-        return const Color(0xFF059669);
-      case 'very_low':
-        return const Color(0xFF6B7280);
-      default:
-        return Colors.grey;
-    }
-  }
-
-  String _getStatusDisplayName(String status) {
+  String _getStatusDisplayName(String status, AppLocalizations loc) {
     switch (status.toLowerCase()) {
       case 'pending':
-        return 'Pending';
+        return loc.status_pending;
       case 'verified':
-        return 'Verified';
+        return loc.status_verified;
       case 'rejected':
-        return 'Rejected';
+        return loc.status_dismissed;
       case 'under_review':
-        return 'Under Review';
+        return loc.status_under_review;
+      case 'all':
+        return loc.common_default;
       default:
         return status;
-    }
-  }
-
-  String _getPriorityDisplayName(String priority) {
-    switch (priority.toLowerCase()) {
-      case 'very_high':
-        return 'Critical';
-      case 'high':
-        return 'High';
-      case 'medium':
-        return 'Medium';
-      case 'low':
-        return 'Low';
-      case 'very_low':
-        return 'Very Low';
-      default:
-        return priority;
     }
   }
 
@@ -950,15 +949,15 @@ class _MyReportsPageState extends State<MyReportsPage>
       case 'weather':
         return 'Weather';
       default:
-        return reportType.replaceAll('_', ' ').split(' ').map((word) => 
-          word.isEmpty ? word : word[0].toUpperCase() + word.substring(1)).join(' ');
+        return reportType.replaceAll('_', ' ').split(' ').map((word) =>
+            word.isEmpty ? word : word[0].toUpperCase() + word.substring(1)).join(' ');
     }
   }
 
   String _formatTimestamp(DateTime timestamp) {
     final now = DateTime.now();
     final difference = now.difference(timestamp);
-    
+
     if (difference.inMinutes < 1) {
       return 'Just now';
     } else if (difference.inHours < 1) {
@@ -990,9 +989,8 @@ class ReportDetailModal extends StatefulWidget {
   State<ReportDetailModal> createState() => _ReportDetailModalState();
 }
 
-class _ReportDetailModalState extends State<ReportDetailModal> 
+class _ReportDetailModalState extends State<ReportDetailModal>
     with TickerProviderStateMixin {
-  
   late AnimationController _slideController;
   late Animation<Offset> _slideAnimation;
 
@@ -1034,23 +1032,6 @@ class _ReportDetailModalState extends State<ReportDetailModal>
     }
   }
 
-  Color _getPriorityColor(String priority) {
-    switch (priority.toLowerCase()) {
-      case 'very_high':
-        return const Color(0xFFDC2626);
-      case 'high':
-        return const Color(0xFFEA580C);
-      case 'medium':
-        return const Color(0xFFD97706);
-      case 'low':
-        return const Color(0xFF059669);
-      case 'very_low':
-        return const Color(0xFF6B7280);
-      default:
-        return Colors.grey;
-    }
-  }
-
   String _getStatusDisplayName(String status) {
     switch (status.toLowerCase()) {
       case 'pending':
@@ -1063,23 +1044,6 @@ class _ReportDetailModalState extends State<ReportDetailModal>
         return 'UNDER REVIEW';
       default:
         return status.toUpperCase();
-    }
-  }
-
-  String _getPriorityDisplayName(String priority) {
-    switch (priority.toLowerCase()) {
-      case 'very_high':
-        return 'CRITICAL PRIORITY';
-      case 'high':
-        return 'HIGH PRIORITY';
-      case 'medium':
-        return 'MEDIUM PRIORITY';
-      case 'low':
-        return 'LOW PRIORITY';
-      case 'very_low':
-        return 'VERY LOW PRIORITY';
-      default:
-        return priority.toUpperCase();
     }
   }
 
@@ -1117,8 +1081,8 @@ class _ReportDetailModalState extends State<ReportDetailModal>
       case 'weather':
         return 'Weather';
       default:
-        return reportType.replaceAll('_', ' ').split(' ').map((word) => 
-          word.isEmpty ? word : word[0].toUpperCase() + word.substring(1)).join(' ');
+        return reportType.replaceAll('_', ' ').split(' ').map((word) =>
+            word.isEmpty ? word : word[0].toUpperCase() + word.substring(1)).join(' ');
     }
   }
 
@@ -1147,7 +1111,7 @@ class _ReportDetailModalState extends State<ReportDetailModal>
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            
+
             // Header
             Padding(
               padding: const EdgeInsets.all(20),
@@ -1208,7 +1172,8 @@ class _ReportDetailModalState extends State<ReportDetailModal>
                           children: [
                             Icon(Icons.delete, size: 18, color: Colors.red),
                             SizedBox(width: 8),
-                            Text('Delete Report', style: TextStyle(color: Colors.red)),
+                            Text('Delete Report',
+                                style: TextStyle(color: Colors.red)),
                           ],
                         ),
                       ),
@@ -1234,16 +1199,19 @@ class _ReportDetailModalState extends State<ReportDetailModal>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Status and Priority badges
+                    // Status badge
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 8),
                           decoration: BoxDecoration(
-                            color: _getStatusColor(widget.report.status).withOpacity(0.1),
+                            color: _getStatusColor(widget.report.status)
+                                .withOpacity(0.1),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: _getStatusColor(widget.report.status).withOpacity(0.3),
+                              color: _getStatusColor(widget.report.status)
+                                  .withOpacity(0.3),
                             ),
                           ),
                           child: Row(
@@ -1263,37 +1231,8 @@ class _ReportDetailModalState extends State<ReportDetailModal>
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
-                                  color: _getStatusColor(widget.report.status),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: _getPriorityColor(widget.report.priorityLevel).withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: _getPriorityColor(widget.report.priorityLevel).withOpacity(0.3),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.priority_high,
-                                size: 16,
-                                color: _getPriorityColor(widget.report.priorityLevel),
-                              ),
-                              const SizedBox(width: 6),
-                              Text(
-                                _getPriorityDisplayName(widget.report.priorityLevel),
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: _getPriorityColor(widget.report.priorityLevel),
+                                  color:
+                                      _getStatusColor(widget.report.status),
                                 ),
                               ),
                             ],
@@ -1301,9 +1240,9 @@ class _ReportDetailModalState extends State<ReportDetailModal>
                         ),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // Report Title and Type
                     Container(
                       padding: const EdgeInsets.all(16),
@@ -1315,7 +1254,8 @@ class _ReportDetailModalState extends State<ReportDetailModal>
                           ],
                         ),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.1)),
+                        border: Border.all(
+                            color: const Color(0xFF3B82F6).withOpacity(0.1)),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1329,7 +1269,8 @@ class _ReportDetailModalState extends State<ReportDetailModal>
                               ),
                               const SizedBox(width: 12),
                               Text(
-                                _getReportTypeDisplayName(widget.report.reportType),
+                                _getReportTypeDisplayName(
+                                    widget.report.reportType),
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey[600],
@@ -1350,9 +1291,9 @@ class _ReportDetailModalState extends State<ReportDetailModal>
                         ],
                       ),
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // Timestamp
                     Container(
                       padding: const EdgeInsets.all(16),
@@ -1363,7 +1304,8 @@ class _ReportDetailModalState extends State<ReportDetailModal>
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.access_time, size: 20, color: Colors.grey[600]),
+                          Icon(Icons.access_time,
+                              size: 20, color: Colors.grey[600]),
                           const SizedBox(width: 12),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1390,41 +1332,41 @@ class _ReportDetailModalState extends State<ReportDetailModal>
                         ],
                       ),
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // Description Section
                     _buildSection(
                       'Description',
                       Icons.description_outlined,
                       widget.report.description,
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // Location Section
                     _buildLocationSection(),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // Media Section
                     if (widget.report.mediaCount > 0) ...[
                       _buildMediaSection(),
                       const SizedBox(height: 24),
                     ],
-                    
+
                     // Report ID Section
                     _buildSection(
                       'Report ID',
                       Icons.tag,
                       widget.report.reportId,
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // Action Buttons
                     _buildActionButtons(),
-                    
+
                     const SizedBox(height: 20),
                   ],
                 ),
@@ -1673,13 +1615,13 @@ class _ReportDetailModalState extends State<ReportDetailModal>
       'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
     ];
-    
+
     final day = timestamp.day.toString().padLeft(2, '0');
     final month = months[timestamp.month - 1];
     final year = timestamp.year;
     final hour = timestamp.hour.toString().padLeft(2, '0');
     final minute = timestamp.minute.toString().padLeft(2, '0');
-    
+
     return '$day $month $year at $hour:$minute';
   }
 }
@@ -1722,7 +1664,7 @@ class UserReport {
       latitude: (data['location']?['lat'] ?? 0.0).toDouble(),
       longitude: (data['location']?['lng'] ?? 0.0).toDouble(),
       status: data['status'] ?? 'pending',
-      timestamp: data['createdAt'] != null 
+      timestamp: data['createdAt'] != null
           ? (data['createdAt'] as Timestamp).toDate()
           : DateTime.now(),
       mediaCount: data['mediaCount'] ?? 0,

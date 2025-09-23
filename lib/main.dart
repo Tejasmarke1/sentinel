@@ -1,3 +1,4 @@
+import 'package:coastsentinel/pages/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'themedata.dart';
@@ -8,6 +9,7 @@ import 'pages/home_page.dart';
 import 'pages/language_selection_page.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:coastsentinel/l10n/app_localizations.dart';
+import 'pages/language_selection_page.dart';
 import 'locale_controller.dart';
 
 Future<void> main() async {
@@ -60,6 +62,7 @@ class MyApp extends StatelessWidget {
             '/login': (_) => const LoginPage(),
             '/onboarding': (_) => const OnboardingPage(),
             '/language': (_) => const LanguageSelectionPage(),
+            '/profile':(_) => const  ProfilePage(),
 
             //'/home': (_) => const MyHomePage(title: 'Sentinel Home'),
             '/home': (_) => const MainHomePage(),

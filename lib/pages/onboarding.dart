@@ -111,6 +111,8 @@ class _OnboardingPageState extends State<OnboardingPage>
         'lastReportAt': null,
         'lastTrustScore': null,
         
+        'language': Localizations.of<AppLocalizations>(context, AppLocalizations)?.localeName ?? 'en',
+        
         // Account metadata
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),

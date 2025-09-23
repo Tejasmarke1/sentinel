@@ -15,34 +15,34 @@ class AppLocalizationsMl extends AppLocalizations {
   String get common_cancel => 'റദ്ദാക്കുക';
 
   @override
-  String get common_delete => 'മായ്ക്കുക';
+  String get common_delete => 'ഇല്ലാതാക്കുക';
 
   @override
-  String get common_edit => 'തിരുത്തുക';
+  String get common_edit => 'എഡിറ്റുചെയ്യുക';
 
   @override
   String get common_retry => 'വീണ്ടും ശ്രമിക്കുക';
 
   @override
-  String get common_default => 'ഡീഫോൾട്ട്';
+  String get common_default => 'ഡിഫോൾട്ട്';
 
   @override
   String get language_select_title => 'ഭാഷ തിരഞ്ഞെടുക്കുക';
 
   @override
-  String get language_select_subtitle => 'സെന്റിനലിനായി നിങ്ങളുടെ ഇഷ്ടഭാഷ തിരഞ്ഞെടുക്കുക';
+  String get language_select_subtitle => 'സെന്റിനലിനായി നിങ്ങൾക്കിഷ്ടമുള്ള ഭാഷ തിരഞ്ഞെടുക്കുക';
 
   @override
-  String get language_section_primary => 'പ്രാഥമിക ഭാഷകൾ';
+  String get language_section_primary => 'പ്രധാന ഭാഷകൾ';
 
   @override
-  String get language_section_west => 'പശ്ചിമ തീരഭാഷകൾ';
+  String get language_section_west => 'പശ്ചിമതീര ഭാഷകൾ';
 
   @override
-  String get language_section_east => 'കിഴക്കൻ തീരഭാഷകൾ';
+  String get language_section_east => 'കിഴക്കൻ തീരദേശ ഭാഷകൾ';
 
   @override
-  String get language_section_islands => 'ദ്വീപ് പ്രദേശങ്ങൾ';
+  String get language_section_islands => 'ദ്വീപ് പ്രദേശങ്ങളിലെ ഭാഷകൾ';
 
   @override
   String language_selected_label(Object language) {
@@ -58,74 +58,74 @@ class AppLocalizationsMl extends AppLocalizations {
   String get language_confirm_button => 'ഭാഷ സ്ഥിരീകരിക്കുക';
 
   @override
-  String get login_welcome_to => 'സ്വാഗതം';
+  String get login_welcome_to => '-ലേക്ക് സ്വാഗതം';
 
   @override
   String get login_title_caps => 'സെന്റിനൽ';
 
   @override
-  String get login_tagline => 'സമുദ്ര അപകട മുന്നറിയിപ്പുകൾക്കായുള്ള നിങ്ങളുടെ സുരക്ഷാ കൂട്ടുകാരൻ';
+  String get login_tagline => 'സമുദ്രത്തിലെ അപകടങ്ങളെക്കുറിച്ചുള്ള മുന്നറിയിപ്പുകൾക്കായി നിങ്ങളുടെ സുരക്ഷാ കൂട്ടാളി';
 
   @override
   String get login_enter_phone => 'നിങ്ങളുടെ മൊബൈൽ നമ്പർ നൽകുക';
 
   @override
-  String get login_phone_help => 'നിങ്ങൾക്ക് SMS മുഖേന ഒരു പരിശോധന കോഡ് അയയ്ക്കും';
+  String get login_phone_help => 'ഞങ്ങൾ നിങ്ങൾക്ക് SMS വഴി ഒരു സ്ഥിരീകരണ കോഡ് അയയ്ക്കും';
 
   @override
-  String get login_send_otp => 'OTP അയയ്ക്കുക';
+  String get login_send_otp => 'ഒടിപി അയയ്ക്കുക';
 
   @override
   String get login_terms_prefix => 'തുടരുന്നതിലൂടെ, നിങ്ങൾ ഞങ്ങളുടെ';
 
   @override
-  String get login_terms => 'സേവന നിബന്ധനകൾ';
+  String get login_terms => 'സേവന നിബന്ധനകളും';
 
   @override
   String get login_and => ' കൂടാതെ ';
 
   @override
-  String get login_privacy => 'സ്വകാര്യതാ നയം';
+  String get login_privacy => 'സ്വകാര്യതാ നയവും അംഗീകരിക്കുന്നു';
 
   @override
   String get login_error_enter_phone => 'ദയവായി നിങ്ങളുടെ മൊബൈൽ നമ്പർ നൽകുക';
 
   @override
-  String get login_error_valid_phone => 'ദയവായി സാധുവായ മൊബൈൽ നമ്പർ നൽകുക';
+  String get login_error_valid_phone => 'ദയവായി സാധുവായ ഒരു മൊബൈൽ നമ്പർ നൽകുക';
 
   @override
-  String get otp_title => 'പരിശോധന കോഡ് നൽകുക';
+  String get otp_title => 'സ്ഥിരീകരണ കോഡ് നൽകുക';
 
   @override
   String otp_sent_to(Object phone) {
-    return 'ഞങ്ങൾ 6 അക്ക കോഡ് അയച്ചു\n$phone';
+    return 'ഞങ്ങൾ $phone എന്ന നമ്പറിലേക്ക് 6 അക്ക കോഡ് അയച്ചിട്ടുണ്ട്';
   }
 
   @override
   String get otp_hint => '000000';
 
   @override
-  String get otp_verify_continue => 'പരിശോധിച്ച് തുടരുക';
+  String get otp_verify_continue => 'സ്ഥിരീകരിച്ച് തുടരുക';
 
   @override
-  String get otp_error_incomplete => 'ദയവായി പൂർണ്ണമായ 6 അക്ക കോഡ് നൽകുക';
+  String get otp_error_incomplete => 'ദയവായി 6 അക്ക കോഡ് പൂർണ്ണമായി നൽകുക';
 
   @override
   String otp_resend_in(Object seconds) {
-    return '$seconds സെക്കൻഡിനകം വീണ്ടും അയയ്ക്കുക';
+    return '$seconds സെക്കൻഡിനുള്ളിൽ കോഡ് വീണ്ടും അയയ്ക്കുക';
   }
 
   @override
   String get otp_resend_cta => 'കോഡ് ലഭിച്ചില്ലേ? വീണ്ടും അയയ്ക്കുക';
 
   @override
-  String get otp_request_first => 'ദയവായി ആദ്യം കോഡ് അഭ്യർത്ഥിക്കുക.';
+  String get otp_request_first => 'ദയവായി ആദ്യം കോഡിനായി അഭ്യർത്ഥിക്കുക.';
 
   @override
-  String get otp_invalid_code => 'Invalid code';
+  String get otp_invalid_code => 'അസാധുവായ കോഡ്';
 
   @override
-  String get verification_failed => 'Verification failed';
+  String get verification_failed => 'സ്ഥിരീകരണം പരാജയപ്പെട്ടു';
 
   @override
   String get phone_country_code => '+91';
@@ -145,19 +145,19 @@ class AppLocalizationsMl extends AppLocalizations {
   }
 
   @override
-  String get reports_filter_label => 'സ്ഥിതി പ്രകാരം ഫിൽട്ടർ ചെയ്യുക';
+  String get reports_filter_label => 'സ്റ്റാറ്റസ് അനുസരിച്ച് ഫിൽട്ടർ ചെയ്യുക';
 
   @override
-  String get status_pending => 'പെൻഡിംഗ്';
+  String get status_pending => 'തീരുമാനമാകാത്തത്';
 
   @override
-  String get status_verified => 'പരിശോധിച്ചത്';
+  String get status_verified => 'പരിശോധിച്ചു';
 
   @override
-  String get status_dismissed => 'റദ്ദാക്കി';
+  String get status_dismissed => 'നിരസിച്ചു';
 
   @override
-  String get status_under_review => 'പരിശോധനയിൽ';
+  String get status_under_review => 'പരിശോധനയിലാണ്';
 
   @override
   String get reports_loading => 'നിങ്ങളുടെ റിപ്പോർട്ടുകൾ ലോഡ് ചെയ്യുന്നു...';
@@ -166,34 +166,34 @@ class AppLocalizationsMl extends AppLocalizations {
   String get reports_error_title => 'റിപ്പോർട്ടുകൾ ലോഡ് ചെയ്യുന്നതിൽ പിശക്';
 
   @override
-  String get reports_empty_all => 'റിപ്പോർട്ടുകളൊന്നുമില്ല';
+  String get reports_empty_all => 'ഇതുവരെ റിപ്പോർട്ടുകളൊന്നുമില്ല';
 
   @override
   String reports_empty_filtered(Object status) {
-    return 'ഏതെങ്കിലും $status റിപ്പോർട്ടുകളില്ല';
+    return '$status റിപ്പോർട്ടുകളൊന്നുമില്ല';
   }
 
   @override
-  String get reports_empty_all_sub => 'സമുദ്രങ്ങളെ സുരക്ഷിതമാക്കാൻ സമുദ്ര അപകടങ്ങൾ റിപ്പോർട്ട് ചെയ്യാൻ തുടങ്ങുക';
+  String get reports_empty_all_sub => 'നമ്മുടെ ജലാശയങ്ങൾ സുരക്ഷിതമായി സൂക്ഷിക്കാൻ സമുദ്രത്തിലെ അപകടങ്ങൾ റിപ്പോർട്ടുചെയ്യാൻ ആരംഭിക്കുക';
 
   @override
-  String get reports_empty_filtered_sub => 'റിപ്പോർട്ടുകൾ കാണാൻ മറ്റൊരു ഫിൽട്ടർ തിരഞ്ഞെടുക്കുക';
+  String get reports_empty_filtered_sub => 'റിപ്പോർട്ടുകൾ കാണുന്നതിന് മറ്റൊരു ഫിൽട്ടർ തിരഞ്ഞെടുക്കാൻ ശ്രമിക്കുക';
 
   @override
-  String get reports_stat_pending => 'പെൻഡിംഗ്';
+  String get reports_stat_pending => 'തീരുമാനമാകാത്തത്';
 
   @override
-  String get reports_stat_verified => 'പരിശോധിച്ചത്';
+  String get reports_stat_verified => 'പരിശോധിച്ചു';
 
   @override
-  String get reports_stat_dismissed => 'റദ്ദാക്കി';
+  String get reports_stat_dismissed => 'നിരസിച്ചു';
 
   @override
-  String get time_just_now => 'ഇപ്പോൾ തന്നെ';
+  String get time_just_now => 'ഇപ്പോൾ';
 
   @override
   String time_minutes_ago(Object minutes) {
-    return '$minutes മിനിറ്റുകൾ മുമ്പ്';
+    return '$minutes മിനിറ്റ് മുമ്പ്';
   }
 
   @override
@@ -212,18 +212,32 @@ class AppLocalizationsMl extends AppLocalizations {
   }
 
   @override
-  String get report_details_title => 'റിപ്പോർട്ട് വിശദാംശങ്ങൾ';
+  String get report_menu_edit => 'റിപ്പോർട്ട് എഡിറ്റുചെയ്യുക';
 
   @override
-  String get report_menu_edit => 'റിപ്പോർട്ട് തിരുത്തുക';
+  String get report_menu_delete => 'റിപ്പോർട്ട് ഇല്ലാതാക്കുക';
 
   @override
-  String get report_menu_delete => 'റിപ്പോർട്ട് മായ്ക്കുക';
+  String get report_delete_title => 'റിപ്പോർട്ട് ഇല്ലാതാക്കുക';
 
   @override
-  String report_reported_on(Object date) {
-    return '$date ന് റിപ്പോർട്ട് ചെയ്തു';
+  String report_delete_confirm(Object title) {
+    return 'നിങ്ങൾക്ക് \"$title\" ഇല്ലാതാക്കണമെന്ന് ഉറപ്പാണോ? ഈ പ്രവൃത്തി പിന്നീട് മാറ്റാനാകില്ല.';
   }
+
+  @override
+  String get report_deleted_success => 'റിപ്പോർട്ട് വിജയകരമായി ഇല്ലാതാക്കി';
+
+  @override
+  String report_delete_failed(Object error) {
+    return 'റിപ്പോർട്ട് ഇല്ലാതാക്കുന്നതിൽ പരാജയപ്പെട്ടു: $error';
+  }
+
+  @override
+  String get report_edit_coming => 'എഡിറ്റ് ചെയ്യാനുള്ള സൗകര്യം ഉടൻ വരുന്നു!';
+
+  @override
+  String get report_media_coming => 'മീഡിയ വ്യൂവർ ഉടൻ വരുന്നു!';
 
   @override
   String get report_section_description => 'വിവരണം';
@@ -237,7 +251,7 @@ class AppLocalizationsMl extends AppLocalizations {
   }
 
   @override
-  String get report_section_reputation => 'റിപ്പോർട്ട് ചെയ്യുന്നവരുടെ വിശ്വാസ്യത';
+  String get report_section_reputation => 'റിപ്പോർട്ടറുടെ വിശ്വാസ്യത';
 
   @override
   String get report_media_view_all => 'എല്ലാം കാണുക';
@@ -249,102 +263,524 @@ class AppLocalizationsMl extends AppLocalizations {
   String get report_lng_label => 'രേഖാംശം:';
 
   @override
-  String get report_action_edit => 'റിപ്പോർട്ട് തിരുത്തുക';
+  String get report_action_edit => 'റിപ്പോർട്ട് എഡിറ്റുചെയ്യുക';
 
   @override
-  String get report_action_delete => 'റിപ്പോർട്ട് മായ്ക്കുക';
+  String get report_action_delete => 'ഇല്ലാതാക്കുക';
 
   @override
-  String get report_delete_title => 'റിപ്പോർട്ട് മായ്ക്കുക';
+  String get report_details_title => 'റിപ്പോർട്ടിന്റെ വിശദാംശങ്ങൾ';
 
   @override
-  String report_delete_confirm(Object title) {
-    return '\"$title\" മായ്ക്കണോ? ഈ നടപടി തിരികെ വാങ്ങാൻ കഴിയില്ല.';
+  String get report_id_label => 'റിപ്പോർട്ട് ഐഡി';
+
+  @override
+  String report_attachments_label(Object count) {
+    return 'അറ്റാച്ച്‌മെൻ്റുകൾ ($count)';
   }
 
   @override
-  String get report_deleted_success => 'റിപ്പോർട്ട് വിജയകരമായി മായ്ച്ചു';
+  String get report_media_files => 'മീഡിയ ഫയലുകൾ';
 
   @override
-  String report_delete_failed(Object error) {
-    return 'റിപ്പോർട്ട് മായ്ക്കുന്നതിൽ പരാജയപ്പെട്ടു: $error';
+  String report_media_files_attached(Object count) {
+    return 'ഈ റിപ്പോർട്ടിനൊപ്പം $count ഫയൽ(കൾ) അറ്റാച്ച് ചെയ്തിട്ടുണ്ട്';
   }
 
   @override
-  String get report_edit_coming => 'തിരുത്തൽ സൗകര്യം ഉടൻ വരുന്നു!';
+  String get report_media_view => 'കാണുക';
 
   @override
-  String get report_media_coming => 'മീഡിയ കാണിക്കുന്ന സൗകര്യം ഉടൻ വരുന്നു!';
+  String get nav_home => 'ഹോം';
 
   @override
-  String get nav_home => 'Home';
+  String get nav_alerts => 'അലേർട്ടുകൾ';
 
   @override
-  String get nav_alerts => 'Alerts';
+  String get nav_reports => 'റിപ്പോർട്ടുകൾ';
 
   @override
-  String get nav_reports => 'Reports';
+  String get nav_profile => 'പ്രൊഫൈൽ';
 
   @override
-  String get nav_profile => 'Profile';
+  String get onboard_complete_your => 'നിങ്ങളുടെ';
 
   @override
-  String get onboard_complete_your => 'Complete Your';
+  String get onboard_profile_setup => 'പ്രൊഫൈൽ സജ്ജീകരണം പൂർത്തിയാക്കുക';
 
   @override
-  String get onboard_profile_setup => 'Profile Setup';
+  String get onboard_header_subtitle => 'നിങ്ങളുടെ അനുഭവം വ്യക്തിഗതമാക്കാനും നിങ്ങളെ സുരക്ഷിതമായി നിലനിർത്താനും ഞങ്ങളെ സഹായിക്കുക';
 
   @override
-  String get onboard_header_subtitle => 'Help us personalize your experience and keep you safe';
+  String get onboard_full_name_label => 'പൂർണ്ണമായ പേര്';
 
   @override
-  String get onboard_full_name_label => 'Full Name';
+  String get onboard_full_name_hint => 'നിങ്ങളുടെ പൂർണ്ണമായ പേര് നൽകുക';
 
   @override
-  String get onboard_full_name_hint => 'Enter your full name';
+  String get onboard_full_name_error => 'ദയവായി നിങ്ങളുടെ പേര് നൽകുക';
 
   @override
-  String get onboard_full_name_error => 'Please enter your name';
+  String get onboard_email_label => 'ഇമെയിൽ വിലാസം';
 
   @override
-  String get onboard_email_label => 'Email Address';
+  String get onboard_email_hint => 'നിങ്ങളുടെ ഇമെയിൽ വിലാസം നൽകുക';
 
   @override
-  String get onboard_email_hint => 'Enter your email address';
+  String get onboard_email_error_empty => 'ദയവായി നിങ്ങളുടെ ഇമെയിൽ നൽകുക';
 
   @override
-  String get onboard_email_error_empty => 'Please enter your email';
+  String get onboard_email_error_invalid => 'ദയവായി സാധുവായ ഒരു ഇമെയിൽ വിലാസം നൽകുക';
 
   @override
-  String get onboard_email_error_invalid => 'Please enter a valid email address';
+  String get onboard_trust_title => 'വിശ്വാസ്യത സ്കോർ സിസ്റ്റം';
 
   @override
-  String get onboard_trust_title => 'Trust Score System';
+  String get onboard_trust_desc => 'റിപ്പോർട്ടിന്റെ ഗുണനിലവാരം, സ്ഥലത്തിന്റെ കൃത്യത, റിപ്പോർട്ടിംഗ് ചരിത്രം എന്നിവ അടിസ്ഥാനമാക്കി നിങ്ങളുടെ റിപ്പോർട്ടുകൾ വിലയിരുത്തും. വിശദവും കൃത്യവുമായ റിപ്പോർട്ടുകൾ സമർപ്പിച്ച് നിങ്ങളുടെ വിശ്വാസ്യത വർദ്ധിപ്പിക്കുക.';
 
   @override
-  String get onboard_trust_desc => 'Your reports will be evaluated based on report quality, location accuracy, and reporting history. Build your reputation by submitting detailed, accurate reports.';
+  String get onboard_continue => 'സജ്ജീകരണം പൂർത്തിയാക്കുക';
 
   @override
-  String get onboard_continue => 'Complete Setup';
+  String get onboard_footer_secure => 'നിങ്ങളുടെ വിവരങ്ങൾ സുരക്ഷിതവും എൻക്രിപ്റ്റ് ചെയ്തതുമാണ്';
 
   @override
-  String get onboard_footer_secure => 'Your information is secure and encrypted';
+  String get dashboard_live => 'തത്സമയം';
 
   @override
-  String get dashboard_live => 'Live';
+  String get dashboard_title => 'സമുദ്ര സുരക്ഷാ ഡാഷ്‌ബോർഡ്';
 
   @override
-  String get dashboard_title => 'Ocean Safety Dashboard';
+  String get dashboard_stat_active_alerts => 'സജീവമായ അലേർട്ടുകൾ';
 
   @override
-  String get dashboard_stat_active_alerts => 'Active Alerts';
+  String get dashboard_stat_verified => 'പരിശോധിച്ചു';
 
   @override
-  String get dashboard_stat_verified => 'Verified';
+  String get dashboard_stat_this_week => 'ഈ ആഴ്ച';
 
   @override
-  String get dashboard_stat_this_week => 'This Week';
+  String get dashboard_recent_reports => 'സമീപകാല അപകട റിപ്പോർട്ടുകൾ';
 
   @override
-  String get dashboard_recent_reports => 'Recent Hazard Reports';
+  String get profile_title => 'പ്രൊഫൈൽ';
+
+  @override
+  String get profile_subtitle => 'നിങ്ങളുടെ അക്കൗണ്ടും ക്രമീകരണങ്ങളും നിയന്ത്രിക്കുക';
+
+  @override
+  String get profile_user_not_logged_in => 'ഉപയോക്താവ് ലോഗിൻ ചെയ്തിട്ടില്ല.';
+
+  @override
+  String get profile_could_not_load_data => 'ഉപയോക്തൃ ഡാറ്റ ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല.';
+
+  @override
+  String profile_something_wrong(Object error) {
+    return 'എന്തോ പിശക് സംഭവിച്ചു: $error';
+  }
+
+  @override
+  String get profile_verified => 'പരിശോധിച്ചുറപ്പിച്ചു';
+
+  @override
+  String profile_member_since(Object date) {
+    return '$date മുതൽ അംഗം';
+  }
+
+  @override
+  String get profile_email => 'ഇമെയിൽ';
+
+  @override
+  String get profile_phone => 'ഫോൺ';
+
+  @override
+  String get profile_edit_profile => 'പ്രൊഫൈൽ എഡിറ്റുചെയ്യുക';
+
+  @override
+  String get profile_statistics_title => 'സ്ഥിതിവിവരക്കണക്കുകളും സംഗ്രഹവും';
+
+  @override
+  String get profile_reports_submitted => 'സമർപ്പിച്ച റിപ്പോർട്ടുകൾ';
+
+  @override
+  String get profile_verified_reports => 'പരിശോധിച്ച റിപ്പോർട്ടുകൾ';
+
+  @override
+  String get profile_pending_reports => 'തീരുമാനമാകാത്ത റിപ്പോർട്ടുകൾ';
+
+  @override
+  String get profile_rejected_reports => 'നിരസിച്ച റിപ്പോർട്ടുകൾ';
+
+  @override
+  String profile_could_not_load_stats(Object error) {
+    return 'സ്ഥിതിവിവരക്കണക്കുകൾ ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല: $error';
+  }
+
+  @override
+  String get profile_no_stats_available => 'സ്ഥിതിവിവരക്കണക്കുകൾ ലഭ്യമല്ല.';
+
+  @override
+  String get profile_account_options => 'അക്കൗണ്ട് ഓപ്ഷനുകൾ';
+
+  @override
+  String get profile_language_settings => 'ഭാഷാ ക്രമീകരണങ്ങൾ';
+
+  @override
+  String get profile_language_settings_desc => 'നിങ്ങൾക്കിഷ്ടമുള്ള ഭാഷ തിരഞ്ഞെടുക്കുക';
+
+  @override
+  String get profile_notification_settings => 'അറിയിപ്പ് ക്രമീകരണങ്ങൾ';
+
+  @override
+  String get profile_notification_settings_desc => 'അലേർട്ടുകളും പുഷ് അറിയിപ്പുകളും നിയന്ത്രിക്കുക';
+
+  @override
+  String get profile_privacy_permissions => 'സ്വകാര്യതയും അനുമതികളും';
+
+  @override
+  String get profile_privacy_permissions_desc => 'നിങ്ങളുടെ ഡാറ്റയും ആപ്പ് അനുമതികളും നിയന്ത്രിക്കുക';
+
+  @override
+  String get profile_help_support => 'സഹായവും പിന്തുണയും';
+
+  @override
+  String get profile_help_support_desc => 'സഹായം നേടുക, പിന്തുണയുമായി ബന്ധപ്പെടുക';
+
+  @override
+  String get profile_help_coming_soon => 'സഹായവും പിന്തുണയും ഉടൻ വരുന്നു!';
+
+  @override
+  String get profile_about_sentinel => 'സെന്റിനലിനെക്കുറിച്ച്';
+
+  @override
+  String get profile_about_sentinel_desc => 'ആപ്പ് പതിപ്പും വിവരങ്ങളും';
+
+  @override
+  String get profile_app_name => 'സെന്റിനൽ';
+
+  @override
+  String get profile_app_version => '1.0.0';
+
+  @override
+  String get profile_app_description => 'ജനപങ്കാളിത്തത്തോടെയുള്ള സമുദ്ര അപകട മുന്നറിയിപ്പുകൾ\n\nസാമൂഹിക റിപ്പോർട്ടിംഗിലൂടെ നമ്മുടെ സമുദ്രങ്ങളെ സുരക്ഷിതമായി നിലനിർത്താൻ സഹായിക്കുന്നു.';
+
+  @override
+  String get profile_logout => 'ലോഗ് ഔട്ട്';
+
+  @override
+  String get profile_logout_desc => 'നിങ്ങളുടെ അക്കൗണ്ടിൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്യുക';
+
+  @override
+  String get profile_logout_confirm => 'സെന്റിനലിൽ നിന്ന് ലോഗൗട്ട് ചെയ്യണമെന്ന് നിങ്ങൾക്ക് ഉറപ്പാണോ?';
+
+  @override
+  String get profile_cancel => 'റദ്ദാക്കുക';
+
+  @override
+  String profile_logout_failed(Object error) {
+    return 'ലോഗൗട്ട് പരാജയപ്പെട്ടു: $error';
+  }
+
+  @override
+  String get profile_edit_profile_title => 'പ്രൊഫൈൽ എഡിറ്റുചെയ്യുക';
+
+  @override
+  String get profile_full_name_label => 'പൂർണ്ണമായ പേര്';
+
+  @override
+  String get profile_full_name_hint => 'നിങ്ങളുടെ പൂർണ്ണമായ പേര് നൽകുക';
+
+  @override
+  String get profile_full_name_error => 'ദയവായി നിങ്ങളുടെ പേര് നൽകുക';
+
+  @override
+  String get profile_email_label => 'ഇമെയിൽ വിലാസം';
+
+  @override
+  String get profile_email_hint => 'നിങ്ങളുടെ ഇമെയിൽ വിലാസം നൽകുക';
+
+  @override
+  String get profile_email_error_empty => 'ദയവായി നിങ്ങളുടെ ഇമെയിൽ നൽകുക';
+
+  @override
+  String get profile_email_error_invalid => 'ദയവായി സാധുവായ ഒരു ഇമെയിൽ വിലാസം നൽകുക';
+
+  @override
+  String get profile_phone_label => 'ഫോൺ നമ്പർ';
+
+  @override
+  String get profile_save_changes => 'മാറ്റങ്ങൾ സംരക്ഷിക്കുക';
+
+  @override
+  String get profile_user_not_found => 'പിശക്: ഉപയോക്താവിനെ കണ്ടെത്താനായില്ല.';
+
+  @override
+  String get profile_updated_success => 'പ്രൊഫൈൽ വിജയകരമായി അപ്ഡേറ്റ് ചെയ്തു!';
+
+  @override
+  String profile_update_failed(Object error) {
+    return 'പ്രൊഫൈൽ അപ്‌ഡേറ്റ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു: $error';
+  }
+
+  @override
+  String profile_language_update_failed(Object error) {
+    return 'ഭാഷ അപ്ഡേറ്റ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു: $error';
+  }
+
+  @override
+  String get profile_notification_title => 'അറിയിപ്പ് ക്രമീകരണങ്ങൾ';
+
+  @override
+  String get profile_general_notifications => 'പൊതുവായ അറിയിപ്പുകൾ';
+
+  @override
+  String get profile_push_notifications => 'പുഷ് അറിയിപ്പുകൾ';
+
+  @override
+  String get profile_push_notifications_desc => 'നിങ്ങളുടെ ഉപകരണത്തിൽ അറിയിപ്പുകൾ സ്വീകരിക്കുക';
+
+  @override
+  String get profile_email_notifications => 'ഇമെയിൽ അറിയിപ്പുകൾ';
+
+  @override
+  String get profile_email_notifications_desc => 'ഇമെയിൽ വഴി അറിയിപ്പുകൾ സ്വീകരിക്കുക';
+
+  @override
+  String get profile_alert_types => 'അലേർട്ട് തരങ്ങൾ';
+
+  @override
+  String get profile_critical_safety_alerts => 'അടിയന്തര സുരക്ഷാ മുന്നറിയിപ്പുകൾ';
+
+  @override
+  String get profile_critical_safety_alerts_desc => 'ഉടനടിയുള്ള അപകട, അടിയന്തര മുന്നറിയിപ്പുകൾ';
+
+  @override
+  String get profile_report_status_updates => 'റിപ്പോർട്ട് സ്റ്റാറ്റസ് അപ്‌ഡേറ്റുകൾ';
+
+  @override
+  String get profile_report_status_updates_desc => 'നിങ്ങൾ സമർപ്പിച്ച റിപ്പോർട്ടുകളിലെ അപ്‌ഡേറ്റുകൾ';
+
+  @override
+  String get profile_news_updates => 'വാർത്തകളും അപ്‌ഡേറ്റുകളും';
+
+  @override
+  String get profile_news_updates_desc => 'സമുദ്ര സുരക്ഷാ വാർത്തകളും ആപ്പ് അപ്‌ഡേറ്റുകളും';
+
+  @override
+  String get profile_critical_alerts_info => 'നിങ്ങളുടെ സുരക്ഷയ്ക്കായി അടിയന്തര സുരക്ഷാ മുന്നറിയിപ്പുകൾ പ്രവർത്തനരഹിതമാക്കാൻ കഴിയില്ല.';
+
+  @override
+  String get profile_privacy_title => 'സ്വകാര്യതയും അനുമതികളും';
+
+  @override
+  String get profile_location_data => 'സ്ഥലവും ഡാറ്റയും';
+
+  @override
+  String get profile_location_sharing => 'സ്ഥലം പങ്കുവെക്കൽ';
+
+  @override
+  String get profile_location_sharing_desc => 'റിപ്പോർട്ടുകൾക്കായി നിങ്ങളുടെ ലൊക്കേഷൻ ആക്‌സസ് ചെയ്യാൻ ആപ്പിനെ അനുവദിക്കുക';
+
+  @override
+  String get profile_public_profile => 'പബ്ലിക് പ്രൊഫൈൽ';
+
+  @override
+  String get profile_public_profile_desc => 'നിങ്ങളുടെ പ്രൊഫൈൽ മറ്റ് ഉപയോക്താക്കൾക്ക് ദൃശ്യമാക്കുക';
+
+  @override
+  String get profile_app_analytics => 'ആപ്പ് അനലിറ്റിക്സ്';
+
+  @override
+  String get profile_usage_analytics => 'ഉപയോഗ വിശകലനം';
+
+  @override
+  String get profile_usage_analytics_desc => 'ഉപയോഗ ഡാറ്റ പങ്കുവെച്ചുകൊണ്ട് ആപ്പ് മെച്ചപ്പെടുത്താൻ സഹായിക്കുക';
+
+  @override
+  String get profile_crash_reporting => 'ക്രാഷ് റിപ്പോർട്ടിംഗ്';
+
+  @override
+  String get profile_crash_reporting_desc => 'ഡെവലപ്പർമാർക്ക് ക്രാഷ് റിപ്പോർട്ടുകൾ സ്വയമേവ അയയ്ക്കുക';
+
+  @override
+  String get profile_view_privacy_policy => 'സ്വകാര്യതാ നയം കാണുക';
+
+  @override
+  String get profile_opening_privacy_policy => 'സ്വകാര്യതാ നയം തുറക്കുന്നു...';
+
+  @override
+  String get profile_export_my_data => 'എൻ്റെ ഡാറ്റ എക്സ്പോർട്ട് ചെയ്യുക';
+
+  @override
+  String get profile_data_export_submitted => 'ഡാറ്റ എക്സ്പോർട്ട് അഭ്യർത്ഥന സമർപ്പിച്ചു';
+
+  @override
+  String get profile_delete_my_account => 'എൻ്റെ അക്കൗണ്ട് ഇല്ലാതാക്കുക';
+
+  @override
+  String get profile_delete_account_title => 'അക്കൗണ്ട് ഇല്ലാതാക്കുക';
+
+  @override
+  String get profile_delete_account_confirm => 'ഈ പ്രവൃത്തി പിന്നീട് മാറ്റാനാകില്ല. നിങ്ങളുടെ എല്ലാ റിപ്പോർട്ടുകളും ഡാറ്റയും ശാശ്വതമായി ഇല്ലാതാക്കപ്പെടും. മുന്നോട്ട് പോകണമെന്ന് നിങ്ങൾക്ക് ഉറപ്പാണോ?';
+
+  @override
+  String get profile_delete_account_submitted => 'അക്കൗണ്ട് ഇല്ലാതാക്കാനുള്ള അഭ്യർത്ഥന സമർപ്പിച്ചു';
+
+  @override
+  String get profile_no_name_provided => 'പേര് നൽകിയിട്ടില്ല';
+
+  @override
+  String get profile_no_email_provided => 'ഇമെയിൽ നൽകിയിട്ടില്ല';
+
+  @override
+  String get profile_no_phone_provided => 'ഫോൺ നമ്പർ നൽകിയിട്ടില്ല';
+
+  @override
+  String get profile_default_location => 'പൂനെ, മഹാരാഷ്ട്ര, ഇന്ത്യ';
+
+  @override
+  String get profile_default_language => 'ml';
+
+  @override
+  String get profile_months => 'ജനു,ഫെബ്രു,മാർ,ഏപ്രി,മേയ്,ജൂൺ,ജൂലൈ,ഓഗ,സെപ്,ഒക്ടോ,നവം,ഡിസം';
+
+  @override
+  String get create_report_title => 'അപകട റിപ്പോർട്ട് ഉണ്ടാക്കുക';
+
+  @override
+  String get create_report_subtitle => 'നമ്മുടെ സമുദ്രങ്ങളെ സുരക്ഷിതമായി നിലനിർത്താൻ സഹായിക്കുക';
+
+  @override
+  String get create_report_description_label => 'വിവരണം *';
+
+  @override
+  String get create_report_description_hint => 'നിങ്ങൾ നിരീക്ഷിച്ച സമുദ്രത്തിലെ അപകടത്തെക്കുറിച്ച് വിവരിക്കുക...';
+
+  @override
+  String get create_report_description_error_empty => 'ദയവായി ഒരു വിവരണം നൽകുക';
+
+  @override
+  String get create_report_description_error_min_length => 'വിവരണത്തിൽ കുറഞ്ഞത് 10 അക്ഷരങ്ങളെങ്കിലും ഉണ്ടായിരിക്കണം';
+
+  @override
+  String get create_report_location_label => 'സ്ഥലം *';
+
+  @override
+  String get create_report_location_hint => 'സ്ഥലം നൽകുക അല്ലെങ്കിൽ താഴെയുള്ള ബട്ടണുകൾ ഉപയോഗിക്കുക';
+
+  @override
+  String get create_report_location_error => 'ദയവായി ഒരു സ്ഥലം ചേർക്കുക';
+
+  @override
+  String get create_report_current_location => 'ഇപ്പോഴത്തെ സ്ഥലം';
+
+  @override
+  String get create_report_getting_location => 'ലഭിക്കുന്നു...';
+
+  @override
+  String get create_report_pin_on_map => 'മാപ്പിൽ പിൻ ചെയ്യുക';
+
+  @override
+  String get create_report_location_selected => 'സ്ഥലം വിജയകരമായി തിരഞ്ഞെടുത്തു';
+
+  @override
+  String create_report_coordinates(Object lat, Object lng) {
+    return 'നിർദ്ദേശാങ്കങ്ങൾ: $lat, $lng';
+  }
+
+  @override
+  String get create_report_attach_media => 'മീഡിയ ചേർക്കുക';
+
+  @override
+  String get create_report_attach_photos_videos => 'ഫോട്ടോകൾ/വീഡിയോകൾ ചേർക്കുക';
+
+  @override
+  String get create_report_submit => 'റിപ്പോർട്ട് സമർപ്പിക്കുക';
+
+  @override
+  String get create_report_submitting => 'സമർപ്പിക്കുന്നു...';
+
+  @override
+  String create_report_media_attached_success(Object count) {
+    return '$count ഫയൽ(കൾ) വിജയകരമായി ചേർത്തു';
+  }
+
+  @override
+  String create_report_media_attach_failed(Object error) {
+    return 'മീഡിയ ചേർക്കുന്നതിൽ പരാജയപ്പെട്ടു: $error';
+  }
+
+  @override
+  String get create_report_location_captured_success => 'ഇപ്പോഴത്തെ സ്ഥലം വിജയകരമായി പകർത്തി!';
+
+  @override
+  String get create_report_location_permission_denied => 'ഉപയോക്താവ് സ്ഥലത്തിനുള്ള അനുമതി നിഷേധിച്ചു. ഈ ഫീച്ചർ ഉപയോഗിക്കാൻ ദയവായി സ്ഥലത്തിനുള്ള അനുമതി നൽകുക.';
+
+  @override
+  String get create_report_location_permission_denied_forever => 'സ്ഥലത്തിനുള്ള അനുമതികൾ ശാശ്വതമായി നിഷേധിച്ചിരിക്കുന്നു. ദയവായി നിങ്ങളുടെ ഉപകരണ ക്രമീകരണങ്ങളിൽ സ്ഥലത്തിനുള്ള അനുമതി പ്രവർത്തനക്ഷമമാക്കുക.';
+
+  @override
+  String get create_report_location_services_disabled => 'ലൊക്കേഷൻ സേവനങ്ങൾ പ്രവർത്തനരഹിതമാക്കിയിരിക്കുന്നു. ദയവായി നിങ്ങളുടെ ഉപകരണ ക്രമീകരണങ്ങളിൽ ലൊക്കേഷൻ സേവനങ്ങൾ പ്രവർത്തനക്ഷമമാക്കുക.';
+
+  @override
+  String get create_report_location_unable_determine => 'സ്ഥലം കണ്ടെത്താനായില്ല. ദയവായി വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ മാപ്പിൽ സ്വയം സ്ഥലം തിരഞ്ഞെടുക്കുക.';
+
+  @override
+  String get create_report_location_current => 'ഇപ്പോഴത്തെ സ്ഥലം';
+
+  @override
+  String create_report_location_coordinates(Object lat, Object lng) {
+    return 'സ്ഥലം: $lat, $lng';
+  }
+
+  @override
+  String get create_report_submit_location_required => 'ദയവായി റിപ്പോർട്ടിനായി ഒരു സ്ഥലം ചേർക്കുക';
+
+  @override
+  String get create_report_submit_login_required => 'റിപ്പോർട്ട് സമർപ്പിക്കാൻ ദയവായി ലോഗിൻ ചെയ്യുക';
+
+  @override
+  String create_report_submit_failed(Object error) {
+    return 'റിപ്പോർട്ട് സമർപ്പിക്കുന്നതിൽ പരാജയപ്പെട്ടു: $error';
+  }
+
+  @override
+  String get create_report_submit_retry => 'വീണ്ടും ശ്രമിക്കുക';
+
+  @override
+  String get create_report_success_title => 'റിപ്പോർട്ട് വിജയകരമായി സമർപ്പിച്ചു!';
+
+  @override
+  String get create_report_success_auto_approved => 'റിപ്പോർട്ട് സ്വയമേവ അംഗീകരിക്കുകയും പ്രസിദ്ധീകരിക്കുകയും ചെയ്തു!';
+
+  @override
+  String create_report_success_auto_approved_sub(Object score) {
+    return 'ഉയർന്ന വിശ്വാസ്യത സ്കോർ ($score%)';
+  }
+
+  @override
+  String get create_report_success_review => 'റിപ്പോർട്ട് അവലോകനത്തിനായി സമർപ്പിച്ചു';
+
+  @override
+  String get create_report_success_review_normal => 'സാധാരണ പ്രോസസ്സിംഗ് പ്രതീക്ഷിക്കുന്നു';
+
+  @override
+  String get create_report_success_review_verification => 'കൂടുതൽ സ്ഥിരീകരണം ആവശ്യമായി വന്നേക്കാം';
+
+  @override
+  String get create_report_success_manual_review => 'റിപ്പോർട്ട് നേരിട്ടുള്ള അവലോകനത്തിനായി സമർപ്പിച്ചു';
+
+  @override
+  String get create_report_success_manual_review_sub => 'വിശദമായ സ്ഥിരീകരണം ആവശ്യമാണ്';
+
+  @override
+  String create_report_success_title_label(Object title) {
+    return 'തലക്കെട്ട്: $title';
+  }
+
+  @override
+  String get create_report_unknown_location => 'അജ്ഞാതമായ സ്ഥലം';
+
+  @override
+  String get create_report_selected_location => 'തിരഞ്ഞെടുത്ത സ്ഥലം';
 }
