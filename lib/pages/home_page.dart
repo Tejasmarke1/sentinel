@@ -1,6 +1,7 @@
 // main_home_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:coastsentinel/l10n/app_localizations.dart';
 
 // Import individual page files
 import 'home_dashboard_page.dart';
@@ -71,6 +72,7 @@ class _MainHomePageState extends State<MainHomePage> with TickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.grey[50],
       body: PageView(
@@ -87,13 +89,13 @@ class _MainHomePageState extends State<MainHomePage> with TickerProviderStateMix
           ProfilePage(),
         ],
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
+      bottomNavigationBar: _buildBottomNavigationBar(t),
       floatingActionButton: _buildFloatingActionButton(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
-  Widget _buildBottomNavigationBar() {
+  Widget _buildBottomNavigationBar(AppLocalizations t) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -112,11 +114,11 @@ class _MainHomePageState extends State<MainHomePage> with TickerProviderStateMix
         elevation: 0,
         child: Row(
           children: [
-            _buildNavItem(0, Icons.home_rounded, 'Home'),
-            _buildNavItem(1, Icons.notifications_rounded, 'Alerts'),
+            _buildNavItem(0, Icons.home_rounded, t.nav_home),
+            _buildNavItem(1, Icons.notifications_rounded, t.nav_alerts),
             const SizedBox(width: 80), // Space for FAB
-            _buildNavItem(2, Icons.assignment_rounded, 'Reports'),
-            _buildNavItem(3, Icons.person_rounded, 'Profile'),
+            _buildNavItem(2, Icons.assignment_rounded, t.nav_reports),
+            _buildNavItem(3, Icons.person_rounded, t.nav_profile),
           ],
         ),
       ),

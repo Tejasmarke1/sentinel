@@ -20,6 +20,9 @@ dependencies:
   image_picker: ^1.0.4
   firebase_storage: 12.4.10
   exif: ^3.3.0
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
   
 
 dev_dependencies:
@@ -27,9 +30,11 @@ dev_dependencies:
     sdk: flutter
   flutter_native_splash: ^2.4.0
   flutter_lints: ^5.0.0
+  flutter_gen: ^5.3.2
 
 flutter:
   uses-material-design: true
+  generate: true
   assets:
     - assets/
 

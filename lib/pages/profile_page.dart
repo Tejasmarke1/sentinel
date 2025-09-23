@@ -2,6 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'language_selection_page.dart';
+import '../l10n/app_localizations.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -10,34 +13,17 @@ class ProfilePage extends StatefulWidget {
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> 
+class _ProfilePageState extends State<ProfilePage>
     with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
-  
   @override
   bool get wantKeepAlive => true;
 
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
 
-  // Mock user data - replace with actual data from Firestore
-  final UserProfile _userProfile = UserProfile(
-    name: 'Master Tej',
-    email: 'tej@example.com',
-    phoneNumber: '+91 8080 135 610',
-    isVerified: true,
-    profileImageUrl: null,
-    joinDate: DateTime.now().subtract(const Duration(days: 45)),
-    location: 'Pune, Maharashtra, India',
-  );
-
-  final UserStatistics _userStats = UserStatistics(
-    totalReports: 12,
-    verifiedReports: 8,
-    pendingReports: 3,
-    rejectedReports: 1,
-    totalViews: 2543,
-    helpedPeople: 156,
-  );
+  // Firebase instances
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   void initState() {
@@ -62,31 +48,94 @@ class _ProfilePageState extends State<ProfilePage>
     super.dispose();
   }
 
-  void _showEditProfileModal() {
+  Future<UserStatistics> _fetchUserStatistics(String userId) async {
+    // Get base stats from the user document
+    final userDoc = await _firestore.collection('users').doc(userId).get();
+    final userData = userDoc.data() ?? {};
+    final totalReports = userData['totalReports'] ?? 0;
+    final verifiedReports = userData['verifiedReports'] ?? 0;
+
+    // Calculate other stats by querying the reports collection
+    final reportsQuery = await _firestore
+        .collection('reports')
+        .where('userId', isEqualTo: userId)
+        .get();
+
+    int pendingCount = 0;
+    int rejectedCount = 0;
+
+    for (var doc in reportsQuery.docs) {
+      final status = doc.data()['status'];
+      // Adjust status strings based on your actual data
+      if (status == 'pending' || status == 'submitted' || status == 'under_review') {
+        pendingCount++;
+      } else if (status == 'rejected') {
+        rejectedCount++;
+      }
+    }
+
+    return UserStatistics(
+      totalReports: totalReports,
+      verifiedReports: verifiedReports,
+      pendingReports: pendingCount,
+      rejectedReports: rejectedCount,
+    );
+  }
+
+  void _showEditProfileModal(UserProfile userProfile) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => EditProfileModal(
-        userProfile: _userProfile,
-        onSave: (updatedProfile) {
-          // TODO: Update profile in Firestore
-          setState(() {
-            // Update local profile data
-          });
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Row(
-                children: [
-                  Icon(Icons.check_circle, color: Colors.white, size: 20),
-                  SizedBox(width: 8),
-                  Text('Profile updated successfully!'),
-                ],
-              ),
-              backgroundColor: Colors.green,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
+        userProfile: userProfile,
+        onSave: (updatedProfile) async {
+          final currentUser = _auth.currentUser;
+          if (currentUser == null) {
+             if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(AppLocalizations.of(context)!.profile_user_not_found),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+            return;
+          }
+
+          try {
+             await _firestore.collection('users').doc(currentUser.uid).update({
+              'name': updatedProfile.name,
+              'email': updatedProfile.email,
+              'updatedAt': FieldValue.serverTimestamp(),
+            });
+
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Row(
+                    children: [
+                      Icon(Icons.check_circle, color: Colors.white, size: 20),
+                      SizedBox(width: 8),
+                      Text(AppLocalizations.of(context)!.profile_updated_success),
+                    ],
+                  ),
+                  backgroundColor: Colors.green,
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            }
+          } catch(e) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(AppLocalizations.of(context)!.profile_update_failed(e)),
+                  backgroundColor: Colors.red,
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            }
+          }
         },
       ),
     );
@@ -110,28 +159,59 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 
+  void _showLanguageSelection(UserProfile userProfile) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => LanguageSelectionPage(
+          currentLanguage: userProfile.language,
+          onLanguageSelected: (languageCode) async {
+            try {
+              final currentUser = _auth.currentUser;
+              if (currentUser != null) {
+                await _firestore.collection('users').doc(currentUser.uid).update({
+                  'language': languageCode,
+                  'updatedAt': FieldValue.serverTimestamp(),
+                });
+                // The StreamBuilder will handle the UI update automatically
+              }
+            } catch (e) {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(AppLocalizations.of(context)!.profile_language_update_failed(e)),
+                    backgroundColor: Colors.red,
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              }
+            }
+          },
+        ),
+      ),
+    );
+  }
+
   void _handleLogout() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
             Icon(Icons.logout, color: Colors.red, size: 24),
             SizedBox(width: 8),
-            Text('Logout'),
+            Text(AppLocalizations.of(context)!.profile_logout),
           ],
         ),
-        content: const Text('Are you sure you want to logout from Sentinel?'),
+        content: Text(AppLocalizations.of(context)!.profile_logout_confirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.profile_cancel),
           ),
           ElevatedButton(
             onPressed: () async {
               Navigator.of(context).pop();
-              
               try {
                 await FirebaseAuth.instance.signOut();
                 if (mounted) {
@@ -141,7 +221,7 @@ class _ProfilePageState extends State<ProfilePage>
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Logout failed: $e'),
+                      content: Text(AppLocalizations.of(context)!.profile_logout_failed(e)),
                       backgroundColor: Colors.red,
                       behavior: SnackBarBehavior.floating,
                     ),
@@ -153,7 +233,7 @@ class _ProfilePageState extends State<ProfilePage>
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Logout'),
+            child: Text(AppLocalizations.of(context)!.profile_logout),
           ),
         ],
       ),
@@ -162,25 +242,58 @@ class _ProfilePageState extends State<ProfilePage>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // Required for AutomaticKeepAliveClientMixin
-    
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              _buildHeader(),
-              _buildUserInfoSection(),
-              const SizedBox(height: 24),
-              _buildStatisticsSection(),
-              const SizedBox(height: 24),
-              _buildAccountOptionsSection(),
-              const SizedBox(height: 32),
-            ],
-          ),
-        ),
-      ),
+    super.build(context);
+    final currentUser = _auth.currentUser;
+
+    if (currentUser == null) {
+      // This should ideally not be reached if your auth flow is correct,
+      // but it's a good safeguard.
+      return Center(
+        child: Text(AppLocalizations.of(context)!.profile_user_not_logged_in),
+      );
+    }
+
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream: _firestore.collection('users').doc(currentUser.uid).snapshots(),
+      builder: (context, userSnapshot) {
+        if (userSnapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (!userSnapshot.hasData || userSnapshot.data?.data() == null) {
+          return Center(child: Text(AppLocalizations.of(context)!.profile_could_not_load_data));
+        }
+        if (userSnapshot.hasError) {
+          return Center(child: Text(AppLocalizations.of(context)!.profile_something_wrong(userSnapshot.error.toString())));
+        }
+
+        final userProfile = UserProfile.fromFirestore(userSnapshot.data!);
+
+        return FutureBuilder<UserStatistics>(
+          future: _fetchUserStatistics(currentUser.uid),
+          builder: (context, statsSnapshot) {
+            // We can show the profile even while stats are loading
+
+            return FadeTransition(
+              opacity: _fadeAnimation,
+              child: SafeArea(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      _buildHeader(),
+                      _buildUserInfoSection(userProfile),
+                      const SizedBox(height: 24),
+                      _buildStatisticsSection(statsSnapshot),
+                      const SizedBox(height: 24),
+                      _buildAccountOptionsSection(userProfile),
+                      const SizedBox(height: 32),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -217,12 +330,12 @@ class _ProfilePageState extends State<ProfilePage>
             ),
           ),
           const SizedBox(width: 16),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Profile',
+                  AppLocalizations.of(context)!.profile_title,
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -230,7 +343,7 @@ class _ProfilePageState extends State<ProfilePage>
                   ),
                 ),
                 Text(
-                  'Manage your account and settings',
+                  AppLocalizations.of(context)!.profile_subtitle,
                   style: TextStyle(
                     color: Colors.white70,
                     fontSize: 14,
@@ -244,7 +357,7 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 
-  Widget _buildUserInfoSection() {
+  Widget _buildUserInfoSection(UserProfile userProfile) {
     return Container(
       margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -262,7 +375,6 @@ class _ProfilePageState extends State<ProfilePage>
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            // Profile Avatar and Basic Info
             Row(
               children: [
                 Container(
@@ -296,16 +408,18 @@ class _ProfilePageState extends State<ProfilePage>
                         children: [
                           Expanded(
                             child: Text(
-                              _userProfile.name,
+                              userProfile.name,
                               style: const TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
                                 color: Color(0xFF1F2937),
                               ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          if (_userProfile.isVerified)
+                          if (userProfile.isVerified)
                             Container(
+                              margin: const EdgeInsets.only(left: 8),
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 8,
                                 vertical: 4,
@@ -317,18 +431,18 @@ class _ProfilePageState extends State<ProfilePage>
                                   color: Colors.green.withOpacity(0.3),
                                 ),
                               ),
-                              child: const Row(
+                              child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.verified,
                                     size: 12,
                                     color: Colors.green,
                                   ),
-                                  SizedBox(width: 4),
+                                  const SizedBox(width: 4),
                                   Text(
-                                    'VERIFIED',
-                                    style: TextStyle(
+                                    AppLocalizations.of(context)!.profile_verified,
+                                    style: const TextStyle(
                                       fontSize: 10,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.green,
@@ -341,7 +455,7 @@ class _ProfilePageState extends State<ProfilePage>
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Member since ${_formatDate(_userProfile.joinDate)}',
+                        AppLocalizations.of(context)!.profile_member_since(_formatDate(userProfile.joinDate)),
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[600],
@@ -349,7 +463,7 @@ class _ProfilePageState extends State<ProfilePage>
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        _userProfile.location,
+                        userProfile.location,
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey[500],
@@ -360,23 +474,17 @@ class _ProfilePageState extends State<ProfilePage>
                 ),
               ],
             ),
-            
             const SizedBox(height: 24),
-            
-            // Contact Information
-            _buildInfoRow(Icons.email_outlined, 'Email', _userProfile.email),
+            _buildInfoRow(Icons.email_outlined, AppLocalizations.of(context)!.profile_email, userProfile.email),
             const SizedBox(height: 12),
-            _buildInfoRow(Icons.phone_outlined, 'Phone', _userProfile.phoneNumber),
-            
+            _buildInfoRow(Icons.phone_outlined, AppLocalizations.of(context)!.profile_phone, userProfile.phoneNumber),
             const SizedBox(height: 20),
-            
-            // Edit Button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: _showEditProfileModal,
+                onPressed: () => _showEditProfileModal(userProfile),
                 icon: const Icon(Icons.edit, size: 18),
-                label: const Text('Edit Profile'),
+                label: Text(AppLocalizations.of(context)!.profile_edit_profile),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF3B82F6),
                   foregroundColor: Colors.white,
@@ -439,16 +547,37 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 
-  Widget _buildStatisticsSection() {
+  Widget _buildStatisticsSection(AsyncSnapshot<UserStatistics> statsSnapshot) {
+    if (statsSnapshot.connectionState == ConnectionState.waiting) {
+        return const Padding(
+          padding: EdgeInsets.symmetric(vertical: 40.0),
+          child: Center(child: CircularProgressIndicator()),
+        );
+    }
+    if (statsSnapshot.hasError) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Center(child: Text(AppLocalizations.of(context)!.profile_could_not_load_stats(statsSnapshot.error.toString()))),
+        );
+    }
+     if (!statsSnapshot.hasData) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Center(child: Text(AppLocalizations.of(context)!.profile_no_stats_available)),
+        );
+    }
+
+    final userStats = statsSnapshot.data!;
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
             child: Text(
-              'Statistics & Summary',
+              AppLocalizations.of(context)!.profile_statistics_title,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -457,41 +586,36 @@ class _ProfilePageState extends State<ProfilePage>
             ),
           ),
           const SizedBox(height: 16),
-          
-          // Primary Stats Row
           Row(
             children: [
               _buildStatCard(
-                'Reports Submitted',
-                '${_userStats.totalReports}',
+                AppLocalizations.of(context)!.profile_reports_submitted,
+                '${userStats.totalReports}',
                 Icons.assignment_outlined,
                 const Color(0xFF3B82F6),
               ),
               const SizedBox(width: 12),
               _buildStatCard(
-                'Verified Reports',
-                '${_userStats.verifiedReports}',
+                AppLocalizations.of(context)!.profile_verified_reports,
+                '${userStats.verifiedReports}',
                 Icons.verified_outlined,
                 Colors.green,
               ),
             ],
           ),
-          
           const SizedBox(height: 12),
-          
-          // Secondary Stats Row
           Row(
             children: [
               _buildStatCard(
-                'Pending Reports',
-                '${_userStats.pendingReports}',
+                AppLocalizations.of(context)!.profile_pending_reports,
+                '${userStats.pendingReports}',
                 Icons.pending_outlined,
                 Colors.orange,
               ),
               const SizedBox(width: 12),
               _buildStatCard(
-                'Rejected Reports',
-                '${_userStats.rejectedReports}',
+                AppLocalizations.of(context)!.profile_rejected_reports,
+                '${userStats.rejectedReports}',
                 Icons.cancel_outlined,
                 Colors.red,
               ),
@@ -550,16 +674,16 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 
-  Widget _buildAccountOptionsSection() {
+  Widget _buildAccountOptionsSection(UserProfile userProfile) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
             child: Text(
-              'Account Options',
+              AppLocalizations.of(context)!.profile_account_options,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -568,7 +692,6 @@ class _ProfilePageState extends State<ProfilePage>
             ),
           ),
           const SizedBox(height: 16),
-          
           Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -584,27 +707,34 @@ class _ProfilePageState extends State<ProfilePage>
             child: Column(
               children: [
                 _buildOptionTile(
+                  Icons.language_outlined,
+                  AppLocalizations.of(context)!.profile_language_settings,
+                  AppLocalizations.of(context)!.profile_language_settings_desc,
+                  () => _showLanguageSelection(userProfile),
+                ),
+                _buildDivider(),
+                _buildOptionTile(
                   Icons.notifications_outlined,
-                  'Notification Settings',
-                  'Manage alerts and push notifications',
+                  AppLocalizations.of(context)!.profile_notification_settings,
+                  AppLocalizations.of(context)!.profile_notification_settings_desc,
                   _showNotificationSettings,
                 ),
                 _buildDivider(),
                 _buildOptionTile(
                   Icons.privacy_tip_outlined,
-                  'Privacy & Permissions',
-                  'Control your data and app permissions',
+                  AppLocalizations.of(context)!.profile_privacy_permissions,
+                  AppLocalizations.of(context)!.profile_privacy_permissions_desc,
                   _showPrivacySettings,
                 ),
                 _buildDivider(),
                 _buildOptionTile(
                   Icons.help_outline,
-                  'Help & Support',
-                  'Get help and contact support',
+                  AppLocalizations.of(context)!.profile_help_support,
+                  AppLocalizations.of(context)!.profile_help_support_desc,
                   () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Help & Support coming soon!'),
+                      SnackBar(
+                        content: Text(AppLocalizations.of(context)!.profile_help_coming_soon),
                         behavior: SnackBarBehavior.floating,
                       ),
                     );
@@ -613,13 +743,13 @@ class _ProfilePageState extends State<ProfilePage>
                 _buildDivider(),
                 _buildOptionTile(
                   Icons.info_outline,
-                  'About Sentinel',
-                  'App version and information',
+                  AppLocalizations.of(context)!.profile_about_sentinel,
+                  AppLocalizations.of(context)!.profile_about_sentinel_desc,
                   () {
                     showAboutDialog(
                       context: context,
-                      applicationName: 'Sentinel',
-                      applicationVersion: '1.0.0',
+                      applicationName: AppLocalizations.of(context)!.profile_app_name,
+                      applicationVersion: AppLocalizations.of(context)!.profile_app_version,
                       applicationIcon: Container(
                         width: 60,
                         height: 60,
@@ -636,8 +766,8 @@ class _ProfilePageState extends State<ProfilePage>
                         ),
                       ),
                       children: [
-                        const Text(
-                          'Crowdsourced Ocean Hazard Alerts\n\nHelping keep our oceans safe through community reporting.',
+                        Text(
+                          AppLocalizations.of(context)!.profile_app_description,
                         ),
                       ],
                     );
@@ -646,8 +776,8 @@ class _ProfilePageState extends State<ProfilePage>
                 _buildDivider(),
                 _buildOptionTile(
                   Icons.logout,
-                  'Logout',
-                  'Sign out from your account',
+                  AppLocalizations.of(context)!.profile_logout,
+                  AppLocalizations.of(context)!.profile_logout_desc,
                   _handleLogout,
                   isDestructive: true,
                 ),
@@ -682,7 +812,7 @@ class _ProfilePageState extends State<ProfilePage>
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: isDestructive 
+                  color: isDestructive
                       ? Colors.red.withOpacity(0.1)
                       : const Color(0xFF3B82F6).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(10),
@@ -739,10 +869,7 @@ class _ProfilePageState extends State<ProfilePage>
   }
 
   String _formatDate(DateTime date) {
-    final months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-    ];
+    final months = AppLocalizations.of(context)!.profile_months.split(',');
     return '${months[date.month - 1]} ${date.year}';
   }
 }
@@ -800,6 +927,7 @@ class _EditProfileModalState extends State<EditProfileModal> {
       profileImageUrl: widget.userProfile.profileImageUrl,
       joinDate: widget.userProfile.joinDate,
       location: widget.userProfile.location,
+      language: widget.userProfile.language,
     );
 
     widget.onSave(updatedProfile);
@@ -835,8 +963,8 @@ class _EditProfileModalState extends State<EditProfileModal> {
             padding: const EdgeInsets.all(20),
             child: Row(
               children: [
-                const Text(
-                  'Edit Profile',
+                Text(
+                  AppLocalizations.of(context)!.profile_edit_profile_title,
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -867,7 +995,7 @@ class _EditProfileModalState extends State<EditProfileModal> {
                     TextFormField(
                       controller: _nameController,
                       decoration: InputDecoration(
-                        labelText: 'Full Name',
+                        labelText: AppLocalizations.of(context)!.profile_full_name_label,
                         prefixIcon: const Icon(Icons.person_outline),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -875,7 +1003,7 @@ class _EditProfileModalState extends State<EditProfileModal> {
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Please enter your name';
+                          return AppLocalizations.of(context)!.profile_full_name_error;
                         }
                         return null;
                       },
@@ -888,7 +1016,7 @@ class _EditProfileModalState extends State<EditProfileModal> {
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
-                        labelText: 'Email Address',
+                        labelText: AppLocalizations.of(context)!.profile_email_label,
                         prefixIcon: const Icon(Icons.email_outlined),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -896,10 +1024,10 @@ class _EditProfileModalState extends State<EditProfileModal> {
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Please enter your email';
+                          return AppLocalizations.of(context)!.profile_email_error_empty;
                         }
                         if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                          return 'Please enter a valid email address';
+                          return AppLocalizations.of(context)!.profile_email_error_invalid;
                         }
                         return null;
                       },
@@ -912,7 +1040,7 @@ class _EditProfileModalState extends State<EditProfileModal> {
                       initialValue: widget.userProfile.phoneNumber,
                       enabled: false,
                       decoration: InputDecoration(
-                        labelText: 'Phone Number',
+                        labelText: AppLocalizations.of(context)!.profile_phone_label,
                         prefixIcon: const Icon(Icons.phone_outlined),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -946,8 +1074,8 @@ class _EditProfileModalState extends State<EditProfileModal> {
                                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                 ),
                               )
-                            : const Text(
-                                'Save Changes',
+                            : Text(
+                                AppLocalizations.of(context)!.profile_save_changes,
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
@@ -982,8 +1110,6 @@ class _NotificationSettingsModalState extends State<NotificationSettingsModal> {
   bool _criticalAlerts = true;
   bool _reportUpdates = true;
   bool _newsUpdates = false;
-  bool _marketingEmails = false;
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -1016,8 +1142,8 @@ class _NotificationSettingsModalState extends State<NotificationSettingsModal> {
                 const Icon(Icons.notifications_outlined, 
                            color: Color(0xFF3B82F6), size: 24),
                 const SizedBox(width: 12),
-                const Text(
-                  'Notification Settings',
+                Text(
+                  AppLocalizations.of(context)!.profile_notification_title,
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -1043,8 +1169,8 @@ class _NotificationSettingsModalState extends State<NotificationSettingsModal> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'General Notifications',
+                  Text(
+                    AppLocalizations.of(context)!.profile_general_notifications,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -1054,22 +1180,22 @@ class _NotificationSettingsModalState extends State<NotificationSettingsModal> {
                   const SizedBox(height: 16),
                   
                   _buildNotificationTile(
-                    'Push Notifications',
-                    'Receive notifications on your device',
+                    AppLocalizations.of(context)!.profile_push_notifications,
+                    AppLocalizations.of(context)!.profile_push_notifications_desc,
                     _pushNotifications,
                     (value) => setState(() => _pushNotifications = value),
                   ),
                   
                   _buildNotificationTile(
-                    'Email Notifications',
-                    'Receive notifications via email',
+                    AppLocalizations.of(context)!.profile_email_notifications,
+                    AppLocalizations.of(context)!.profile_email_notifications_desc,
                     _emailNotifications,
                     (value) => setState(() => _emailNotifications = value),
                   ),
                   
                   const SizedBox(height: 24),
-                  const Text(
-                    'Alert Types',
+                  Text(
+                    AppLocalizations.of(context)!.profile_alert_types,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -1079,33 +1205,33 @@ class _NotificationSettingsModalState extends State<NotificationSettingsModal> {
                   const SizedBox(height: 16),
                   
                   _buildNotificationTile(
-                    'Critical Safety Alerts',
-                    'Immediate danger and emergency alerts',
+                    AppLocalizations.of(context)!.profile_critical_safety_alerts,
+                    AppLocalizations.of(context)!.profile_critical_safety_alerts_desc,
                     _criticalAlerts,
                     (value) => setState(() => _criticalAlerts = value),
                     isImportant: true,
                   ),
                   
                   _buildNotificationTile(
-                    'Report Status Updates',
-                    'Updates on your submitted reports',
+                    AppLocalizations.of(context)!.profile_report_status_updates,
+                    AppLocalizations.of(context)!.profile_report_status_updates_desc,
                     _reportUpdates,
                     (value) => setState(() => _reportUpdates = value),
                   ),
                   
                   _buildNotificationTile(
-                    'News & Updates',
-                    'Ocean safety news and app updates',
+                    AppLocalizations.of(context)!.profile_news_updates,
+                    AppLocalizations.of(context)!.profile_news_updates_desc,
                     _newsUpdates,
                     (value) => setState(() => _newsUpdates = value),
                   ),
                   
-                  _buildNotificationTile(
-                    'Marketing Emails',
-                    'Promotional content and features',
-                    _marketingEmails,
-                    (value) => setState(() => _marketingEmails = value),
-                  ),
+                  // _buildNotificationTile(
+                  //   'Marketing Emails',
+                  //   'Promotional content and features',
+                  //   _marketingEmails,
+                  //   (value) => setState(() => _marketingEmails = value),
+                  // ),
                   
                   const SizedBox(height: 24),
                   
@@ -1121,10 +1247,10 @@ class _NotificationSettingsModalState extends State<NotificationSettingsModal> {
                       children: [
                         Icon(Icons.info_outline, color: Colors.blue[700], size: 20),
                         const SizedBox(width: 12),
-                        const Expanded(
+                        Expanded(
                           child: Text(
-                            'Critical safety alerts cannot be disabled for your protection.',
-                            style: TextStyle(
+                            AppLocalizations.of(context)!.profile_critical_alerts_info,
+                            style: const TextStyle(
                               fontSize: 14,
                               color: Colors.blue,
                             ),
@@ -1243,8 +1369,8 @@ class _PrivacySettingsModalState extends State<PrivacySettingsModal> {
                 const Icon(Icons.privacy_tip_outlined, 
                            color: Color(0xFF3B82F6), size: 24),
                 const SizedBox(width: 12),
-                const Text(
-                  'Privacy & Permissions',
+                Text(
+                  AppLocalizations.of(context)!.profile_privacy_title,
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -1270,8 +1396,8 @@ class _PrivacySettingsModalState extends State<PrivacySettingsModal> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Location & Data',
+                  Text(
+                    AppLocalizations.of(context)!.profile_location_data,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -1281,24 +1407,24 @@ class _PrivacySettingsModalState extends State<PrivacySettingsModal> {
                   const SizedBox(height: 16),
                   
                   _buildPrivacyTile(
-                    'Location Sharing',
-                    'Allow app to access your location for reports',
+                    AppLocalizations.of(context)!.profile_location_sharing,
+                    AppLocalizations.of(context)!.profile_location_sharing_desc,
                     _locationSharing,
                     (value) => setState(() => _locationSharing = value),
                     icon: Icons.location_on,
                   ),
                   
                   _buildPrivacyTile(
-                    'Public Profile',
-                    'Make your profile visible to other users',
+                    AppLocalizations.of(context)!.profile_public_profile,
+                    AppLocalizations.of(context)!.profile_public_profile_desc,
                     _publicProfile,
                     (value) => setState(() => _publicProfile = value),
                     icon: Icons.public,
                   ),
                   
                   const SizedBox(height: 24),
-                  const Text(
-                    'App Analytics',
+                  Text(
+                    AppLocalizations.of(context)!.profile_app_analytics,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -1308,16 +1434,16 @@ class _PrivacySettingsModalState extends State<PrivacySettingsModal> {
                   const SizedBox(height: 16),
                   
                   _buildPrivacyTile(
-                    'Usage Analytics',
-                    'Help improve the app by sharing usage data',
+                    AppLocalizations.of(context)!.profile_usage_analytics,
+                    AppLocalizations.of(context)!.profile_usage_analytics_desc,
                     _dataAnalytics,
                     (value) => setState(() => _dataAnalytics = value),
                     icon: Icons.analytics,
                   ),
                   
                   _buildPrivacyTile(
-                    'Crash Reporting',
-                    'Automatically send crash reports to developers',
+                    AppLocalizations.of(context)!.profile_crash_reporting,
+                    AppLocalizations.of(context)!.profile_crash_reporting_desc,
                     _crashReporting,
                     (value) => setState(() => _crashReporting = value),
                     icon: Icons.bug_report,
@@ -1327,12 +1453,12 @@ class _PrivacySettingsModalState extends State<PrivacySettingsModal> {
                   
                   // Action Buttons
                   _buildActionButton(
-                    'View Privacy Policy',
+                    AppLocalizations.of(context)!.profile_view_privacy_policy,
                     Icons.description_outlined,
                     () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Opening Privacy Policy...'),
+                        SnackBar(
+                          content: Text(AppLocalizations.of(context)!.profile_opening_privacy_policy),
                           behavior: SnackBarBehavior.floating,
                         ),
                       );
@@ -1342,12 +1468,12 @@ class _PrivacySettingsModalState extends State<PrivacySettingsModal> {
                   const SizedBox(height: 12),
                   
                   _buildActionButton(
-                    'Export My Data',
+                    AppLocalizations.of(context)!.profile_export_my_data,
                     Icons.download_outlined,
                     () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Data export request submitted'),
+                        SnackBar(
+                          content: Text(AppLocalizations.of(context)!.profile_data_export_submitted),
                           behavior: SnackBarBehavior.floating,
                         ),
                       );
@@ -1357,7 +1483,7 @@ class _PrivacySettingsModalState extends State<PrivacySettingsModal> {
                   const SizedBox(height: 12),
                   
                   _buildActionButton(
-                    'Delete My Account',
+                    AppLocalizations.of(context)!.profile_delete_my_account,
                     Icons.delete_forever_outlined,
                     () {
                       _showDeleteAccountDialog();
@@ -1432,7 +1558,7 @@ class _PrivacySettingsModalState extends State<PrivacySettingsModal> {
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: const Color(0xFF3B82F6),
+            activeColor: const Color.fromARGB(255, 7, 7, 7),
           ),
         ],
       ),
@@ -1470,27 +1596,27 @@ class _PrivacySettingsModalState extends State<PrivacySettingsModal> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
             Icon(Icons.warning_amber_rounded, color: Colors.red, size: 24),
             SizedBox(width: 8),
-            Text('Delete Account'),
+            Text(AppLocalizations.of(context)!.profile_delete_account_title),
           ],
         ),
-        content: const Text(
-          'This action cannot be undone. All your reports and data will be permanently deleted. Are you sure you want to proceed?',
+        content: Text(
+          AppLocalizations.of(context)!.profile_delete_account_confirm,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.profile_cancel),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Account deletion request submitted'),
+                SnackBar(
+                  content: Text(AppLocalizations.of(context)!.profile_delete_account_submitted),
                   backgroundColor: Colors.red,
                   behavior: SnackBarBehavior.floating,
                 ),
@@ -1500,7 +1626,7 @@ class _PrivacySettingsModalState extends State<PrivacySettingsModal> {
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Delete Account'),
+            child: Text(AppLocalizations.of(context)!.profile_delete_account_title),
           ),
         ],
       ),
@@ -1517,6 +1643,7 @@ class UserProfile {
   final String? profileImageUrl;
   final DateTime joinDate;
   final String location;
+  final String language;
 
   UserProfile({
     required this.name,
@@ -1526,7 +1653,28 @@ class UserProfile {
     this.profileImageUrl,
     required this.joinDate,
     required this.location,
+    required this.language,
   });
+
+  factory UserProfile.fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
+    final data = doc.data();
+    if (data == null) {
+      throw Exception("User document data is null!");
+    }
+    return UserProfile(
+      name: data['name'] ?? 'No Name Provided',
+      email: data['email'] ?? 'No Email Provided',
+      phoneNumber: data['mobile_number'] ?? 'No Phone Provided',
+      isVerified: data['id_verified'] ?? false,
+      // Convert Firestore Timestamp to DateTime
+      joinDate: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      // Location is not in the user document, so we use a placeholder.
+      // You might want to add this field to your user document in Firestore.
+      location: 'Pune, Maharashtra, India',
+      language: data['language'] ?? 'en',
+      profileImageUrl: data['profileImageUrl'], // If you add this field
+    );
+  }
 }
 
 class UserStatistics {
@@ -1534,15 +1682,11 @@ class UserStatistics {
   final int verifiedReports;
   final int pendingReports;
   final int rejectedReports;
-  final int totalViews;
-  final int helpedPeople;
 
   UserStatistics({
     required this.totalReports,
     required this.verifiedReports,
     required this.pendingReports,
     required this.rejectedReports,
-    required this.totalViews,
-    required this.helpedPeople,
   });
 }
