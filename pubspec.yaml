@@ -31,6 +31,7 @@ dev_dependencies:
   flutter_native_splash: ^2.4.0
   flutter_lints: ^5.0.0
   flutter_gen: ^5.3.2
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
@@ -40,6 +41,13 @@ flutter:
 
 flutter_native_splash:
   color: "#ffffff"          # Background color
-  image: assets/logo.png    # Your splash logo
+  image: assets\logo.png   # Your splash logo
   android: true
   ios: true
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/app_icon.png" # Used for iOS and older Android
+  adaptive_icon_background: "#0D47A1"      # A solid color background
+  adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
