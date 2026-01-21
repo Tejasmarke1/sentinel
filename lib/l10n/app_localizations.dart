@@ -1552,6 +1552,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Selected location'**
   String get create_report_selected_location;
+
+  /// No description provided for @alerts_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Hazard Alerts'**
+  String get alerts_title;
+
+  /// No description provided for @alerts_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay informed about ocean hazards in your area'**
+  String get alerts_subtitle;
+
+  /// No description provided for @alerts_empty_title.
+  ///
+  /// In en, this message translates to:
+  /// **'No Active Alerts'**
+  String get alerts_empty_title;
+
+  /// No description provided for @alerts_empty_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll notify you when hazards are detected nearby'**
+  String get alerts_empty_subtitle;
+
+  /// No description provided for @alerts_loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading alerts...'**
+  String get alerts_loading;
+
+  /// No description provided for @alerts_error_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to Load Alerts'**
+  String get alerts_error_title;
+
+  /// No description provided for @alerts_error_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Please check your connection and try again'**
+  String get alerts_error_subtitle;
+
+  /// No description provided for @alerts_retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get alerts_retry;
+
+  /// No description provided for @alerts_filter_all.
+  ///
+  /// In en, this message translates to:
+  /// **'All Alerts'**
+  String get alerts_filter_all;
+
+  /// No description provided for @alerts_filter_critical.
+  ///
+  /// In en, this message translates to:
+  /// **'Critical'**
+  String get alerts_filter_critical;
+
+  /// No description provided for @alerts_filter_moderate.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderate'**
+  String get alerts_filter_moderate;
+
+  /// No description provided for @alerts_filter_low.
+  ///
+  /// In en, this message translates to:
+  /// **'Low Priority'**
+  String get alerts_filter_low;
+
+  /// No description provided for @alerts_severity_critical.
+  ///
+  /// In en, this message translates to:
+  /// **'Critical'**
+  String get alerts_severity_critical;
+
+  /// No description provided for @alerts_severity_moderate.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderate'**
+  String get alerts_severity_moderate;
+
+  /// No description provided for @alerts_severity_low.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get alerts_severity_low;
+
+  /// No description provided for @alerts_location.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get alerts_location;
+
+  /// No description provided for @alerts_distance_km.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance} km away'**
+  String alerts_distance_km(Object distance);
+
+  /// No description provided for @alerts_time_just_now.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get alerts_time_just_now;
+
+  /// No description provided for @alerts_time_minutes_ago.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes}m ago'**
+  String alerts_time_minutes_ago(Object minutes);
+
+  /// No description provided for @alerts_time_hours_ago.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h ago'**
+  String alerts_time_hours_ago(Object hours);
+
+  /// No description provided for @alerts_time_days_ago.
+  ///
+  /// In en, this message translates to:
+  /// **'{days}d ago'**
+  String alerts_time_days_ago(Object days);
+
+  /// No description provided for @alerts_time_yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get alerts_time_yesterday;
+
+  /// No description provided for @alerts_nearby_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Nearby Alerts'**
+  String get alerts_nearby_title;
+
+  /// No description provided for @alerts_recent_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Alerts'**
+  String get alerts_recent_title;
+
+  /// No description provided for @alerts_view_details.
+  ///
+  /// In en, this message translates to:
+  /// **'View Details'**
+  String get alerts_view_details;
+
+  /// No description provided for @alerts_reported_by.
+  ///
+  /// In en, this message translates to:
+  /// **'Reported by {name}'**
+  String alerts_reported_by(Object name);
+
+  /// No description provided for @alerts_official_source.
+  ///
+  /// In en, this message translates to:
+  /// **'Official Source'**
+  String get alerts_official_source;
+
+  /// No description provided for @notification_hazard_alert_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Hazard Alert'**
+  String get notification_hazard_alert_title;
+
+  /// No description provided for @notification_critical_alert_title.
+  ///
+  /// In en, this message translates to:
+  /// **'⚠️ Critical Alert'**
+  String get notification_critical_alert_title;
+
+  /// No description provided for @notification_moderate_alert_title.
+  ///
+  /// In en, this message translates to:
+  /// **'⚠️ Moderate Alert'**
+  String get notification_moderate_alert_title;
+
+  /// No description provided for @notification_low_alert_title.
+  ///
+  /// In en, this message translates to:
+  /// **'ℹ️ Low Priority Alert'**
+  String get notification_low_alert_title;
+
+  /// No description provided for @notification_new_alert_body.
+  ///
+  /// In en, this message translates to:
+  /// **'New hazard alert in your area'**
+  String get notification_new_alert_body;
+
+  /// No description provided for @notification_tap_to_view.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to view details'**
+  String get notification_tap_to_view;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

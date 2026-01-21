@@ -149,6 +149,10 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   }
 
   Future<void> _verifyCode() async {
+
+
+
+    
     if (_verificationId == null) {
       setState(() => _error = AppLocalizations.of(context)!.otp_request_first);
       return;

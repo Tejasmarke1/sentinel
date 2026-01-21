@@ -783,4 +783,113 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get create_report_selected_location => 'चयनित स्थान';
+
+  @override
+  String get alerts_title => 'खतराह सूचनाएं';
+
+  @override
+  String get alerts_subtitle => 'अपने क्षेत्र में समुद्री खतरों के बारे में जानकारी रखें';
+
+  @override
+  String get alerts_empty_title => 'कोई सक्रिय अलर्ट नहीं';
+
+  @override
+  String get alerts_empty_subtitle => 'जब आसपास खतरा मिलेगा तो हम आपको सूचना देंगे';
+
+  @override
+  String get alerts_loading => 'अलर्ट लोड हो रहे हैं...';
+
+  @override
+  String get alerts_error_title => 'अलर्ट लोड नहीं हो सके';
+
+  @override
+  String get alerts_error_subtitle => 'कृपया अपना कनेक्शन जांचें और पुनः प्रयास करें';
+
+  @override
+  String get alerts_retry => 'पुनः प्रयास करें';
+
+  @override
+  String get alerts_filter_all => 'सभी अलर्ट';
+
+  @override
+  String get alerts_filter_critical => 'गंभीर';
+
+  @override
+  String get alerts_filter_moderate => 'मध्यम';
+
+  @override
+  String get alerts_filter_low => 'कम प्राथमिकता';
+
+  @override
+  String get alerts_severity_critical => 'गंभीर';
+
+  @override
+  String get alerts_severity_moderate => 'मध्यम';
+
+  @override
+  String get alerts_severity_low => 'कम';
+
+  @override
+  String get alerts_location => 'स्थान';
+
+  @override
+  String alerts_distance_km(Object distance) {
+    return '$distance किमी दूर';
+  }
+
+  @override
+  String get alerts_time_just_now => 'अभी';
+
+  @override
+  String alerts_time_minutes_ago(Object minutes) {
+    return '$minutes मिनट पहले';
+  }
+
+  @override
+  String alerts_time_hours_ago(Object hours) {
+    return '$hours घंटे पहले';
+  }
+
+  @override
+  String alerts_time_days_ago(Object days) {
+    return '$days दिन पहले';
+  }
+
+  @override
+  String get alerts_time_yesterday => 'कल';
+
+  @override
+  String get alerts_nearby_title => 'आसपास के अलर्ट';
+
+  @override
+  String get alerts_recent_title => 'हाल के अलर्ट';
+
+  @override
+  String get alerts_view_details => 'विवरण देखें';
+
+  @override
+  String alerts_reported_by(Object name) {
+    return '$name द्वारा रिपोर्ट किया गया';
+  }
+
+  @override
+  String get alerts_official_source => 'आधिकारिक स्रोत';
+
+  @override
+  String get notification_hazard_alert_title => 'खतरा अलर्ट';
+
+  @override
+  String get notification_critical_alert_title => '⚠️ गंभीर अलर्ट';
+
+  @override
+  String get notification_moderate_alert_title => '⚠️ मध्यम अलर्ट';
+
+  @override
+  String get notification_low_alert_title => 'ℹ️ कम प्राथमिकता अलर्ट';
+
+  @override
+  String get notification_new_alert_body => 'आपके क्षेत्र में नया खतरा अलर्ट';
+
+  @override
+  String get notification_tap_to_view => 'विवरण देखने के लिए टैप करें';
 }

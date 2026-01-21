@@ -265,11 +265,42 @@
   "create_report_success_manual_review_sub": "Detailed verification required",
   "create_report_success_title_label": "Title: {title}",
   "create_report_unknown_location": "Unknown location",
-  "create_report_selected_location": "Selected location"
-
+  "create_report_selected_location": "Selected location",
 
   
-
-
-
+  "alerts_title": "Hazard Alerts",
+  "alerts_subtitle": "Stay informed about ocean hazards in your area",
+  "alerts_empty_title": "No Active Alerts",
+  "alerts_empty_subtitle": "We'll notify you when hazards are detected nearby",
+  "alerts_loading": "Loading alerts...",
+  "alerts_error_title": "Unable to Load Alerts",
+  "alerts_error_subtitle": "Please check your connection and try again",
+  "alerts_retry": "Retry",
+  "alerts_filter_all": "All Alerts",
+  "alerts_filter_critical": "Critical",
+  "alerts_filter_moderate": "Moderate",
+  "alerts_filter_low": "Low Priority",
+  "alerts_severity_critical": "Critical",
+  "alerts_severity_moderate": "Moderate", 
+  "alerts_severity_low": "Low",
+  "alerts_location": "Location",
+  "alerts_distance_km": "{distance} km away",
+  "alerts_time_just_now": "Just now",
+  "alerts_time_minutes_ago": "{minutes}m ago",
+  "alerts_time_hours_ago": "{hours}h ago",
+  "alerts_time_days_ago": "{days}d ago",
+  "alerts_time_yesterday": "Yesterday",
+  "alerts_nearby_title": "Nearby Alerts",
+  "alerts_recent_title": "Recent Alerts",
+  "alerts_view_details": "View Details",
+  "alerts_reported_by": "Reported by {name}",
+  "alerts_official_source": "Official Source",
+  
+  
+  "notification_hazard_alert_title": "Hazard Alert",
+  "notification_critical_alert_title": "⚠️ Critical Alert",
+  "notification_moderate_alert_title": "⚠️ Moderate Alert", 
+  "notification_low_alert_title": "ℹ️ Low Priority Alert",
+  "notification_new_alert_body": "New hazard alert in your area",
+  "notification_tap_to_view": "Tap to view details"
 }

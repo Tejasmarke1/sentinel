@@ -783,4 +783,113 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get create_report_selected_location => 'Selected location';
+
+  @override
+  String get alerts_title => 'Hazard Alerts';
+
+  @override
+  String get alerts_subtitle => 'Stay informed about ocean hazards in your area';
+
+  @override
+  String get alerts_empty_title => 'No Active Alerts';
+
+  @override
+  String get alerts_empty_subtitle => 'We\'ll notify you when hazards are detected nearby';
+
+  @override
+  String get alerts_loading => 'Loading alerts...';
+
+  @override
+  String get alerts_error_title => 'Unable to Load Alerts';
+
+  @override
+  String get alerts_error_subtitle => 'Please check your connection and try again';
+
+  @override
+  String get alerts_retry => 'Retry';
+
+  @override
+  String get alerts_filter_all => 'All Alerts';
+
+  @override
+  String get alerts_filter_critical => 'Critical';
+
+  @override
+  String get alerts_filter_moderate => 'Moderate';
+
+  @override
+  String get alerts_filter_low => 'Low Priority';
+
+  @override
+  String get alerts_severity_critical => 'Critical';
+
+  @override
+  String get alerts_severity_moderate => 'Moderate';
+
+  @override
+  String get alerts_severity_low => 'Low';
+
+  @override
+  String get alerts_location => 'Location';
+
+  @override
+  String alerts_distance_km(Object distance) {
+    return '$distance km away';
+  }
+
+  @override
+  String get alerts_time_just_now => 'Just now';
+
+  @override
+  String alerts_time_minutes_ago(Object minutes) {
+    return '${minutes}m ago';
+  }
+
+  @override
+  String alerts_time_hours_ago(Object hours) {
+    return '${hours}h ago';
+  }
+
+  @override
+  String alerts_time_days_ago(Object days) {
+    return '${days}d ago';
+  }
+
+  @override
+  String get alerts_time_yesterday => 'Yesterday';
+
+  @override
+  String get alerts_nearby_title => 'Nearby Alerts';
+
+  @override
+  String get alerts_recent_title => 'Recent Alerts';
+
+  @override
+  String get alerts_view_details => 'View Details';
+
+  @override
+  String alerts_reported_by(Object name) {
+    return 'Reported by $name';
+  }
+
+  @override
+  String get alerts_official_source => 'Official Source';
+
+  @override
+  String get notification_hazard_alert_title => 'Hazard Alert';
+
+  @override
+  String get notification_critical_alert_title => '⚠️ Critical Alert';
+
+  @override
+  String get notification_moderate_alert_title => '⚠️ Moderate Alert';
+
+  @override
+  String get notification_low_alert_title => 'ℹ️ Low Priority Alert';
+
+  @override
+  String get notification_new_alert_body => 'New hazard alert in your area';
+
+  @override
+  String get notification_tap_to_view => 'Tap to view details';
 }

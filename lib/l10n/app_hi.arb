@@ -253,6 +253,43 @@
   "create_report_success_manual_review_sub": "विस्तृत सत्यापन आवश्यक",
   "create_report_success_title_label": "शीर्षक: {title}",
   "create_report_unknown_location": "अज्ञात स्थान",
-  "create_report_selected_location": "चयनित स्थान"
+  "create_report_selected_location": "चयनित स्थान",
+
+  
+  "alerts_title": "खतराह सूचनाएं",
+  "alerts_subtitle": "अपने क्षेत्र में समुद्री खतरों के बारे में जानकारी रखें",
+  "alerts_empty_title": "कोई सक्रिय अलर्ट नहीं",
+  "alerts_empty_subtitle": "जब आसपास खतरा मिलेगा तो हम आपको सूचना देंगे",
+  "alerts_loading": "अलर्ट लोड हो रहे हैं...",
+  "alerts_error_title": "अलर्ट लोड नहीं हो सके",
+  "alerts_error_subtitle": "कृपया अपना कनेक्शन जांचें और पुनः प्रयास करें",
+  "alerts_retry": "पुनः प्रयास करें",
+  "alerts_filter_all": "सभी अलर्ट",
+  "alerts_filter_critical": "गंभीर",
+  "alerts_filter_moderate": "मध्यम",
+  "alerts_filter_low": "कम प्राथमिकता",
+  "alerts_severity_critical": "गंभीर",
+  "alerts_severity_moderate": "मध्यम",
+  "alerts_severity_low": "कम",
+  "alerts_location": "स्थान",
+  "alerts_distance_km": "{distance} किमी दूर",
+  "alerts_time_just_now": "अभी",
+  "alerts_time_minutes_ago": "{minutes} मिनट पहले",
+  "alerts_time_hours_ago": "{hours} घंटे पहले",
+  "alerts_time_days_ago": "{days} दिन पहले",
+  "alerts_time_yesterday": "कल",
+  "alerts_nearby_title": "आसपास के अलर्ट",
+  "alerts_recent_title": "हाल के अलर्ट",
+  "alerts_view_details": "विवरण देखें",
+  "alerts_reported_by": "{name} द्वारा रिपोर्ट किया गया",
+  "alerts_official_source": "आधिकारिक स्रोत",
+  
+  
+  "notification_hazard_alert_title": "खतरा अलर्ट",
+  "notification_critical_alert_title": "⚠️ गंभीर अलर्ट",
+  "notification_moderate_alert_title": "⚠️ मध्यम अलर्ट",
+  "notification_low_alert_title": "ℹ️ कम प्राथमिकता अलर्ट",
+  "notification_new_alert_body": "आपके क्षेत्र में नया खतरा अलर्ट",
+  "notification_tap_to_view": "विवरण देखने के लिए टैप करें"
 }
 

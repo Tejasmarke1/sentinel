@@ -2,6 +2,7 @@
 import 'package:coastsentinel/pages/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'themedata.dart';
 import 'pages/splash_screen.dart';
 import 'pages/login_page.dart';
@@ -11,10 +12,20 @@ import 'pages/language_selection_page.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:coastsentinel/l10n/app_localizations.dart';
 import 'locale_controller.dart';
+import 'services/fcm_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize Firebase
   await Firebase.initializeApp();
+  
+  // Set up background message handler
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  
+  // Initialize FCM service
+  await FCMService.instance.initialize();
+  
   runApp(const MyApp());
 }
 
