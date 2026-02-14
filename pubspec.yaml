@@ -25,6 +25,11 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: ^0.20.2
+  record: ^6.0.0
+  path_provider: ^2.1.2
+  connectivity_plus: ^5.0.2
+  permission_handler: ^11.3.0
+  audioplayers: ^6.1.0
   
 
 dev_dependencies:
@@ -40,6 +45,10 @@ flutter:
   generate: true
   assets:
     - assets/
+    - assets/audio/welcome.mp3
+    - assets/audio/ending.mp3
+    - assets/audio/beep.mp3
+
 
 flutter_native_splash:
   color: "#ffffff"          # Background color

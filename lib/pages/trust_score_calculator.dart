@@ -327,7 +327,7 @@ class TrustScoreCalculator {
 
     if (reportLat == null || reportLng == null) return 0.0;
 
-    // Check if coordinates are in valid ocean/coastal areas
+    // Check if coordinates are valid
     if (reportLat.abs() > 90 || reportLng.abs() > 180) {
       return 0.0; // Invalid coordinates
     }
@@ -510,31 +510,31 @@ class ReportAnalyzer {
         'oil slick',
         'hydrocarbon',
       ],
-      'high_waves': [
-        'high waves',
-        'dangerous waves',
-        'large waves',
-        'big waves',
-        'rough seas',
-        'choppy water',
+      'severe_weather': [
+        'severe weather',
+        'dangerous conditions',
+        'extreme weather',
+        'high winds',
+        'severe conditions',
+        'harsh environment',
         'tsunami',
       ],
-      'strong_currents': [
-        'strong current',
-        'rip current',
-        'dangerous current',
-        'undertow',
-        'riptide',
-        'rip tide',
+      'environmental_hazard': [
+        'environmental hazard',
+        'hazardous conditions',
+        'dangerous environment',
+        'unsafe conditions',
+        'hazard warning',
+        'danger zone',
       ],
-      'marine_life_hazard': [
-        'shark',
-        'jellyfish',
-        'stingray',
-        'dangerous fish',
-        'marine animal',
-        'sea snake',
-        'blue bottle',
+      'wildlife_hazard': [
+        'wildlife',
+        'dangerous animal',
+        'wild animal',
+        'animal hazard',
+        'snake',
+        'venomous creature',
+        'aggressive animal',
       ],
       'weather_alert': [
         'storm',
@@ -545,26 +545,26 @@ class ReportAnalyzer {
         'waterspout',
         'severe weather',
       ],
-      'water_quality': [
+      'environmental_quality': [
         'algae bloom',
-        'red tide',
-        'murky water',
-        'discolored water',
+        'environmental contamination',
+        'poor air quality',
+        'contamination',
         'foul smell',
-        'contaminated water',
+        'polluted area',
       ],
-      'coral_damage': [
-        'coral bleaching',
-        'coral damage',
-        'reef damage',
-        'dead coral',
-        'coral destruction',
+      'ecosystem_damage': [
+        'ecosystem damage',
+        'habitat destruction',
+        'environmental damage',
+        'vegetation damage',
+        'ecological destruction',
       ],
       'infrastructure_damage': [
-        'broken pier',
-        'damaged dock',
-        'jetty damage',
-        'seawall breach',
+        'broken infrastructure',
+        'damaged structure',
+        'structural damage',
+        'barrier breach',
         'barrier failure',
       ],
       'debris': [
@@ -620,16 +620,16 @@ class ReportAnalyzer {
     // Extract location context
     String locationContext = '';
     final locationKeywords = [
-      'beach',
-      'shore',
-      'coast',
-      'harbor',
-      'marina',
-      'pier',
-      'dock',
-      'bay',
-      'inlet',
-      'reef',
+      'area',
+      'location',
+      'zone',
+      'region',
+      'site',
+      'place',
+      'vicinity',
+      'district',
+      'sector',
+      'territory',
     ];
     for (final keyword in locationKeywords) {
       if (text.contains(keyword)) {
@@ -642,19 +642,19 @@ class ReportAnalyzer {
     // Map report types to readable names
     final typeNames = {
       'oil_spill': 'Oil Spill',
-      'high_waves': 'High Waves',
-      'strong_currents': 'Strong Currents',
-      'marine_life_hazard': 'Marine Life Hazard',
+      'severe_weather': 'Severe Weather',
+      'environmental_hazard': 'Environmental Hazard',
+      'wildlife_hazard': 'Wildlife Hazard',
       'weather_alert': 'Weather Alert',
-      'water_quality': 'Water Quality Issue',
-      'coral_damage': 'Coral Damage',
+      'environmental_quality': 'Environmental Quality Issue',
+      'ecosystem_damage': 'Ecosystem Damage',
       'infrastructure_damage': 'Infrastructure Damage',
-      'debris': 'Marine Debris',
-      'pollution': 'Water Pollution',
-      'general_hazard': 'Ocean Hazard',
+      'debris': 'Debris',
+      'pollution': 'Pollution',
+      'general_hazard': 'Hazard',
     };
 
-    final typeName = typeNames[reportType] ?? 'Ocean Hazard';
+    final typeName = typeNames[reportType] ?? 'Hazard';
     String title = '$severity$typeName$locationContext';
 
     // Ensure reasonable length
@@ -743,9 +743,9 @@ class ReportAnalyzer {
   static bool _checkAuthorityContact(String text) {
     final authorityWords = [
       'police',
-      'coast guard',
-      'authorities',
       'emergency services',
+      'authorities',
+      'rescue team',
       'called',
       'reported',
     ];

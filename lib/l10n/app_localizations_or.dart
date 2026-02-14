@@ -788,7 +788,7 @@ class AppLocalizationsOr extends AppLocalizations {
   String get alerts_title => 'Hazard Alerts';
 
   @override
-  String get alerts_subtitle => 'Stay informed about ocean hazards in your area';
+  String get alerts_subtitle => 'Stay informed about hazards in your area';
 
   @override
   String get alerts_empty_title => 'No Active Alerts';

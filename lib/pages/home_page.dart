@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:coastsentinel/l10n/app_localizations.dart';
+import 'package:coastsentinel/utils/app_colors.dart';
 
 // Import individual page files
 import 'home_dashboard_page.dart';
@@ -9,6 +10,7 @@ import 'alerts_page.dart';
 import 'my_reports_page.dart';
 import 'profile_page.dart';
 import 'create_report_page.dart';
+import 'disaster_tollfree_screen.dart';
 
 class MainHomePage extends StatefulWidget {
   const MainHomePage({super.key});
@@ -65,7 +67,7 @@ class _MainHomePageState extends State<MainHomePage> with TickerProviderStateMix
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       builder: (context) => const CreateReportPage(),
     );
   }
@@ -73,35 +75,62 @@ class _MainHomePageState extends State<MainHomePage> with TickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context)!;
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        children: const [
-          HomeDashboardPage(),
-          AlertsPage(),
-          MyReportsPage(),
-          ProfilePage(),
-        ],
-      ),
-      bottomNavigationBar: _buildBottomNavigationBar(t),
-      floatingActionButton: _buildFloatingActionButton(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+    return Stack(
+      children: [
+        Scaffold(
+          backgroundColor: AppColors.primaryBackground,
+          body: PageView(
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+            children: const [
+              HomeDashboardPage(),
+              AlertsPage(),
+              MyReportsPage(),
+              ProfilePage(),
+            ],
+          ),
+          bottomNavigationBar: _buildBottomNavigationBar(t),
+          floatingActionButton: _buildFloatingActionButton(),
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        ),
+        // Phone FAB for Toll-Free Disaster Reporting
+        Positioned(
+          right: 16,
+          bottom: 90,
+          child: FloatingActionButton(
+            mini: true,
+            backgroundColor: Colors.red,
+            onPressed: () {
+              HapticFeedback.mediumImpact();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const DisasterTollFreeScreen(),
+                ),
+              );
+            },
+            child: const Icon(
+              Icons.phone,
+              color: Colors.white,
+              size: 24,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
   Widget _buildBottomNavigationBar(AppLocalizations t) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surfaceColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: AppColors.shadowLight,
             blurRadius: 10,
             offset: const Offset(0, -2),
           ),
@@ -110,7 +139,7 @@ class _MainHomePageState extends State<MainHomePage> with TickerProviderStateMix
       child: BottomAppBar(
         shape: const CircularNotchedRectangle(),
         notchMargin: 8,
-        color: Colors.white,
+        color: AppColors.surfaceColor,
         elevation: 0,
         child: Row(
           children: [
@@ -137,14 +166,14 @@ class _MainHomePageState extends State<MainHomePage> with TickerProviderStateMix
             children: [
               Icon(
                 icon,
-                color: isSelected ? const Color(0xFF3B82F6) : Colors.grey[400],
+                color: isSelected ? AppColors.infoBlueLight : AppColors.disabled,
                 size: 22,
               ),
               const SizedBox(height: 2),
               Text(
                 label,
                 style: TextStyle(
-                  color: isSelected ? const Color(0xFF3B82F6) : Colors.grey[400],
+                  color: isSelected ? AppColors.infoBlueLight : AppColors.disabled,
                   fontSize: 10,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 ),
@@ -163,21 +192,17 @@ class _MainHomePageState extends State<MainHomePage> with TickerProviderStateMix
       scale: _fabAnimation,
       child: FloatingActionButton(
         onPressed: _showCreateReportModal,
-        backgroundColor: const Color(0xFF3B82F6),
+        backgroundColor: AppColors.infoBlueLight,
         elevation: 8,
         child: Container(
           width: 56,
           height: 56,
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFF3B82F6), Color(0xFF06B6D4)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            gradient: AppColors.infoBlueLightGradient,
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF3B82F6).withOpacity(0.4),
+                color: AppColors.withOpacity(AppColors.infoBlueLight, 0.4),
                 blurRadius: 15,
                 offset: const Offset(0, 6),
               ),
@@ -185,7 +210,7 @@ class _MainHomePageState extends State<MainHomePage> with TickerProviderStateMix
           ),
           child: const Icon(
             Icons.add_rounded,
-            color: Colors.white,
+            color: AppColors.textOnDark,
             size: 28,
           ),
         ),

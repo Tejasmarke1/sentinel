@@ -8,6 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:exif/exif.dart';
+import 'package:coastsentinel/utils/app_colors.dart';
 import 'dart:io';
 import 'dart:math';
 import 'map_pinning_page.dart';
@@ -585,7 +586,7 @@ class _CreateReportPageState extends State<CreateReportPage>
         print('Report analyzer not available, using defaults: $e');
         reportAnalysis = {
           'type': 'general_hazard',
-          'title': 'Ocean Hazard Report',
+          'title': 'Hazard Report',
         };
         reportMetadata = {};
       }
@@ -739,22 +740,22 @@ class _CreateReportPageState extends State<CreateReportPage>
     IconData icon = Icons.check_circle;
     
     if (isAutoApproved) {
-      bgColor = const Color(0xFF10B981);
+      bgColor = AppColors.safeGreen;
       message = AppLocalizations.of(context)!.create_report_success_auto_approved;
       subMessage = AppLocalizations.of(context)!.create_report_success_auto_approved_sub((trustScore * 100).toInt());
       icon = Icons.verified;
     } else if (trustLevel == 'medium') {
-      bgColor = const Color(0xFF3B82F6);
+      bgColor = AppColors.infoBlueLight;
       message = AppLocalizations.of(context)!.create_report_success_review;
       subMessage = AppLocalizations.of(context)!.create_report_success_review_normal;
       icon = Icons.pending;
     } else if (trustLevel == 'low') {
-      bgColor = const Color(0xFFF59E0B);
+      bgColor = AppColors.moderateYellow;
       message = AppLocalizations.of(context)!.create_report_success_review;
       subMessage = AppLocalizations.of(context)!.create_report_success_review_verification;
       icon = Icons.schedule;
     } else {
-      bgColor = const Color(0xFF6B7280);
+      bgColor = AppColors.disabled;
       message = AppLocalizations.of(context)!.create_report_success_manual_review;
       subMessage = AppLocalizations.of(context)!.create_report_success_manual_review_sub;
       icon = Icons.hourglass_empty;

@@ -64,7 +64,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get login_title_caps => 'SENTINEL';
 
   @override
-  String get login_tagline => 'Your safety companion for ocean hazard alerts';
+  String get login_tagline => 'Your safety companion for hazard alerts';
 
   @override
   String get login_enter_phone => 'Enter your mobile number';
@@ -174,7 +174,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get reports_empty_all_sub => 'Start reporting ocean hazards to help keep our waters safe';
+  String get reports_empty_all_sub => 'Start reporting hazards to help keep our community safe';
 
   @override
   String get reports_empty_filtered_sub => 'Try selecting a different filter to view reports';
@@ -348,7 +348,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboard_live => 'Live';
 
   @override
-  String get dashboard_title => 'Ocean Safety Dashboard';
+  String get dashboard_title => 'Safety Dashboard';
 
   @override
   String get dashboard_stat_active_alerts => 'Active Alerts';
@@ -462,7 +462,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profile_app_version => '1.0.0';
 
   @override
-  String get profile_app_description => 'Crowdsourced Ocean Hazard Alerts\n\nHelping keep our oceans safe through community reporting.';
+  String get profile_app_description => 'Crowdsourced Hazard Alerts\n\nHelping keep our community safe through reporting.';
 
   @override
   String get profile_logout => 'Logout';
@@ -564,7 +564,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profile_news_updates => 'News & Updates';
 
   @override
-  String get profile_news_updates_desc => 'Ocean safety news and app updates';
+  String get profile_news_updates_desc => 'Safety news and app updates';
 
   @override
   String get profile_critical_alerts_info => 'Critical safety alerts cannot be disabled for your protection.';
@@ -648,13 +648,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get create_report_title => 'Create Hazard Report';
 
   @override
-  String get create_report_subtitle => 'Help keep our oceans safe';
+  String get create_report_subtitle => 'Help keep our community safe';
 
   @override
   String get create_report_description_label => 'Description *';
 
   @override
-  String get create_report_description_hint => 'Describe the ocean hazard you observed...';
+  String get create_report_description_hint => 'Describe the hazard you observed...';
 
   @override
   String get create_report_description_error_empty => 'Please provide a description';
@@ -788,7 +788,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get alerts_title => 'Hazard Alerts';
 
   @override
-  String get alerts_subtitle => 'Stay informed about ocean hazards in your area';
+  String get alerts_subtitle => 'Stay informed about hazards in your area';
 
   @override
   String get alerts_empty_title => 'No Active Alerts';

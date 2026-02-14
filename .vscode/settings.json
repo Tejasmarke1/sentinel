@@ -1,3 +1,4 @@
 {
-    "cmake.sourceDirectory": "D:/sih/coastsentinel/windows/flutter"
+    "cmake.sourceDirectory": "D:/sih/coastsentinel/windows/flutter",
+    "java.configuration.updateBuildConfiguration": "interactive"
 }

@@ -73,7 +73,7 @@ class _AlertsTestPageState extends State<AlertsTestPage> {
       await AlertTestUtils.addTestCriticalAlert(
         latitude: 19.0760,
         longitude: 72.8777,
-        customTitle: 'TEST: Critical Ocean Hazard',
+        customTitle: 'TEST: Critical Hazard',
         customDescription: 'This is a test critical alert to verify the notification system is working properly.',
       );
       

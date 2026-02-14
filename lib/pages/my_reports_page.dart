@@ -4,6 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:coastsentinel/l10n/app_localizations.dart';
+import 'dart:ui'; // For BackdropFilter
+import '../utils/glassmorphism.dart';
+import '../utils/animations.dart';
 
 class MyReportsPage extends StatefulWidget {
   const MyReportsPage({super.key});
@@ -250,9 +253,28 @@ class _MyReportsPageState extends State<MyReportsPage>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const CircularProgressIndicator(),
-            const SizedBox(height: 16),
-            Text(loc.reports_loading),
+            ShimmerLoading(
+              duration: const Duration(milliseconds: 1500),
+              baseColor: const Color(0xFFE0E0E0),
+              highlightColor: const Color(0xFFF5F5F5),
+              child: Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            FadeInAnimation(
+              child: Text(
+                loc.reports_loading,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Colors.grey[600],
+                ),
+              ),
+            ),
           ],
         ),
       );
@@ -260,38 +282,62 @@ class _MyReportsPageState extends State<MyReportsPage>
 
     if (_error != null) {
       return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
-            const SizedBox(height: 16),
-            Text(
-              loc.reports_error_title,
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red[700]),
-            ),
-            const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Text(
-                _error!,
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.red[600]),
+        child: FadeInAnimation(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              BounceAnimation(
+                child: Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
               ),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton.icon(
-              onPressed: _loadUserReports,
-              icon: const Icon(Icons.refresh),
-              label: Text(loc.common_retry),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF3B82F6),
-                foregroundColor: Colors.white,
+              const SizedBox(height: 16),
+              SlideInAnimation(
+                delay: const Duration(milliseconds: 200),
+                child: Text(
+                  loc.reports_error_title,
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red[700]),
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 8),
+              FadeInAnimation(
+                delay: const Duration(milliseconds: 300),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Text(
+                    _error!,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.red[600]),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              ScaleInAnimation(
+                delay: const Duration(milliseconds: 400),
+                child: GlassButton(
+                  onPressed: _loadUserReports,
+                  width: 150,
+                  height: 48,
+                  color: const Color(0xFF3B82F6),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.refresh, color: Colors.white),
+                      const SizedBox(width: 8),
+                      Text(
+                        loc.common_retry,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -301,110 +347,151 @@ class _MyReportsPageState extends State<MyReportsPage>
 
   Widget _buildHeader() {
     final loc = AppLocalizations.of(context)!;
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            const Color(0xFF1E40AF),
-            const Color(0xFF3B82F6),
-            const Color(0xFF60A5FA),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          stops: const [0.0, 0.6, 1.0],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF3B82F6).withOpacity(0.25),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.3),
-                    width: 1,
-                  ),
-                ),
-                child: const Icon(
-                  Icons.assignment_rounded,
-                  color: Colors.white,
-                  size: 28,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      loc.reports_title,
-                      style: const TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                    Text(
-                      loc.reports_subtitle,
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(25),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.3),
-                    width: 1,
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 6,
-                      height: 6,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      loc.reports_count_label(_userReports.length),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+    return SlideInAnimation(
+      delay: const Duration(milliseconds: 100),
+      begin: const Offset(0, -0.3),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              const Color(0xFF1E40AF),
+              const Color(0xFF3B82F6),
+              const Color(0xFF60A5FA),
             ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            stops: const [0.0, 0.6, 1.0],
           ),
-        ],
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF3B82F6).withOpacity(0.25),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            FadeInAnimation(
+              delay: const Duration(milliseconds: 200),
+              child: Row(
+                children: [
+                  PulseAnimation(
+                    duration: const Duration(milliseconds: 2000),
+                    minScale: 0.98,
+                    maxScale: 1.02,
+                    child: GlassmorphicContainer(
+                      width: 56,
+                      height: 56,
+                      borderRadius: 16,
+                      blur: 10,
+                      color: Colors.white,
+                      opacity: 0.2,
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.4),
+                        width: 1.5,
+                      ),
+                      child: const Icon(
+                        Icons.assignment_rounded,
+                        color: Colors.white,
+                        size: 28,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        FadeInAnimation(
+                          delay: const Duration(milliseconds: 250),
+                          child: Text(
+                            loc.reports_title,
+                            style: const TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                        ),
+                        FadeInAnimation(
+                          delay: const Duration(milliseconds: 300),
+                          child: Text(
+                            loc.reports_subtitle,
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  PulseAnimation(
+                    duration: const Duration(milliseconds: 2000),
+                    minScale: 0.95,
+                    maxScale: 1.05,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(25),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                        child: Container(
+                          padding:
+                              const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(25),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.4),
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              PulseAnimation(
+                                minScale: 0.8,
+                                maxScale: 1.2,
+                                duration: const Duration(milliseconds: 1500),
+                                child: Container(
+                                  width: 6,
+                                  height: 6,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.white.withOpacity(0.5),
+                                        blurRadius: 4,
+                                        spreadRadius: 1,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                loc.reports_count_label(_userReports.length),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -416,12 +503,15 @@ class _MyReportsPageState extends State<MyReportsPage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            loc.reports_filter_label,
-            style: const TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF1F2937),
+          FadeInAnimation(
+            delay: const Duration(milliseconds: 400),
+            child: Text(
+              loc.reports_filter_label,
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF1F2937),
+              ),
             ),
           ),
           const SizedBox(height: 12),
@@ -437,68 +527,73 @@ class _MyReportsPageState extends State<MyReportsPage>
                     ? loc.common_default
                     : _getStatusDisplayName(filter, loc);
 
-                return Container(
-                  margin: const EdgeInsets.only(right: 10),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {
-                        setState(() {
-                          _selectedFilter = filter;
-                        });
-                        HapticFeedback.lightImpact();
-                      },
-                      borderRadius: BorderRadius.circular(20),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? const Color(0xFF3B82F6)
-                              : Colors.grey[100],
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
+                return SlideInAnimation(
+                  delay: Duration(milliseconds: 450 + (index * 50)),
+                  begin: const Offset(0.3, 0),
+                  curve: Curves.easeOutCubic,
+                  child: Container(
+                    margin: const EdgeInsets.only(right: 10),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            _selectedFilter = filter;
+                          });
+                          HapticFeedback.lightImpact();
+                        },
+                        borderRadius: BorderRadius.circular(20),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
                             color: isSelected
                                 ? const Color(0xFF3B82F6)
-                                : Colors.grey[300]!,
-                            width: 1.5,
-                          ),
-                          boxShadow: isSelected
-                              ? [
-                                  BoxShadow(
-                                    color: const Color(0xFF3B82F6)
-                                        .withOpacity(0.3),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ]
-                              : null,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (isSelected) ...[
-                              const Icon(
-                                Icons.check_circle,
-                                size: 16,
-                                color: Colors.white,
-                              ),
-                              const SizedBox(width: 6),
-                            ],
-                            Text(
-                              displayName,
-                              style: TextStyle(
-                                color: isSelected
-                                    ? Colors.white
-                                    : Colors.grey[700],
-                                fontWeight: isSelected
-                                    ? FontWeight.w600
-                                    : FontWeight.w500,
-                                fontSize: 13,
-                              ),
+                                : Colors.grey[100],
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: isSelected
+                                  ? const Color(0xFF3B82F6)
+                                  : Colors.grey[300]!,
+                              width: 1.5,
                             ),
-                          ],
+                            boxShadow: isSelected
+                                ? [
+                                    BoxShadow(
+                                      color: const Color(0xFF3B82F6)
+                                          .withOpacity(0.3),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ]
+                                : null,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (isSelected) ...[
+                                const Icon(
+                                  Icons.check_circle,
+                                  size: 16,
+                                  color: Colors.white,
+                                ),
+                                const SizedBox(width: 6),
+                              ],
+                              Text(
+                                displayName,
+                                style: TextStyle(
+                                  color: isSelected
+                                      ? Colors.white
+                                      : Colors.grey[700],
+                                  fontWeight: isSelected
+                                      ? FontWeight.w600
+                                      : FontWeight.w500,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -529,63 +624,85 @@ class _MyReportsPageState extends State<MyReportsPage>
       child: Row(
         children: [
           _buildStatCard(loc.reports_stat_pending, '$pendingCount',
-              const Color(0xFFFF8C00), Icons.pending_actions),
+              const Color(0xFFFF8C00), Icons.pending_actions, 0),
           const SizedBox(width: 8),
           _buildStatCard(loc.reports_stat_verified, '$verifiedCount',
-              const Color(0xFF10B981), Icons.verified),
+              const Color(0xFF10B981), Icons.verified, 100),
           const SizedBox(width: 8),
           _buildStatCard(loc.reports_stat_dismissed, '$rejectedCount',
-              const Color(0xFFEF4444), Icons.cancel),
+              const Color(0xFFEF4444), Icons.cancel, 200),
           const SizedBox(width: 8),
           _buildStatCard(loc.status_under_review, '$underReviewCount',
-              const Color(0xFF3B82F6), Icons.rate_review),
+              const Color(0xFF3B82F6), Icons.rate_review, 300),
         ],
       ),
     );
   }
 
-  Widget _buildStatCard(String title, String value, Color color, IconData icon) {
+  Widget _buildStatCard(String title, String value, Color color, IconData icon, int delayMs) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withOpacity(0.2), width: 1.5),
-          boxShadow: [
-            BoxShadow(
-              color: color.withOpacity(0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
+      child: ScaleInAnimation(
+        delay: Duration(milliseconds: 500 + delayMs),
+        curve: Curves.easeOutBack,
+        child: GlassCard(
+          padding: const EdgeInsets.all(14),
+          hasGradient: true,
+          gradientColors: [
+            color.withOpacity(0.15),
+            color.withOpacity(0.05),
           ],
-        ),
-        child: Column(
-          children: [
-            Icon(
-              icon,
-              size: 20,
-              color: color,
-            ),
-            const SizedBox(height: 6),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: color,
+          child: Column(
+            children: [
+              PulseAnimation(
+                minScale: 0.95,
+                maxScale: 1.05,
+                duration: const Duration(milliseconds: 1500),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: color.withOpacity(0.3),
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Icon(
+                    icon,
+                    size: 20,
+                    color: color,
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 11,
-                color: Colors.grey[600],
-                fontWeight: FontWeight.w600,
+              const SizedBox(height: 8),
+              BounceAnimation(
+                begin: 0.5,
+                end: 1.0,
+                duration: const Duration(milliseconds: 800),
+                child: Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 2),
+              FadeInAnimation(
+                delay: Duration(milliseconds: 600 + delayMs),
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Colors.grey[700],
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -629,23 +746,14 @@ class _MyReportsPageState extends State<MyReportsPage>
   Widget _buildReportCard(UserReport report) {
     // Access the localization instance from the context
     final loc = AppLocalizations.of(context)!;
-    return Container(
+    return GlassCard(
       margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: _getStatusColor(report.status).withOpacity(0.2),
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+      padding: const EdgeInsets.all(20),
+      hasGradient: true,
+      gradientColors: [
+        _getStatusColor(report.status).withOpacity(0.1),
+        _getStatusColor(report.status).withOpacity(0.05),
+      ],
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -654,35 +762,48 @@ class _MyReportsPageState extends State<MyReportsPage>
             _showReportDetails(report);
           },
           borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header row with status
-                Row(
-                  children: [
-                    Container(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header row with status
+              Row(
+                children: [
+                  ScaleInAnimation(
+                    delay: const Duration(milliseconds: 100),
+                    child: GlassmorphicContainer(
+                      height: 28,
+                      borderRadius: 20,
+                      blur: 8,
+                      color: _getStatusColor(report.status),
+                      opacity: 0.2,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: _getStatusColor(report.status).withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color:
-                              _getStatusColor(report.status).withOpacity(0.3),
-                          width: 1,
-                        ),
+                      border: Border.all(
+                        color:
+                            _getStatusColor(report.status).withOpacity(0.4),
+                        width: 1.5,
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Container(
-                            width: 6,
-                            height: 6,
-                            decoration: BoxDecoration(
-                              color: _getStatusColor(report.status),
-                              shape: BoxShape.circle,
+                          PulseAnimation(
+                            minScale: 0.8,
+                            maxScale: 1.2,
+                            duration: const Duration(milliseconds: 1500),
+                            child: Container(
+                              width: 6,
+                              height: 6,
+                              decoration: BoxDecoration(
+                                color: _getStatusColor(report.status),
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: _getStatusColor(report.status).withOpacity(0.5),
+                                    blurRadius: 4,
+                                    spreadRadius: 1,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                           const SizedBox(width: 6),
@@ -691,136 +812,136 @@ class _MyReportsPageState extends State<MyReportsPage>
                             _getStatusDisplayName(report.status, loc),
                             style: TextStyle(
                               fontSize: 12,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w700,
                               color: _getStatusColor(report.status),
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
+              ),
 
-                const SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-                // Report title and type
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF3B82F6).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Icon(
-                        _getReportTypeIcon(report.reportType),
-                        size: 20,
-                        color: const Color(0xFF3B82F6),
-                      ),
+              // Report title and type
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF3B82F6).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            report.reportTitle,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF1F2937),
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                    child: Icon(
+                      _getReportTypeIcon(report.reportType),
+                      size: 20,
+                      color: const Color(0xFF3B82F6),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          report.reportTitle,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1F2937),
                           ),
-                          const SizedBox(height: 2),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          _getReportTypeDisplayName(report.reportType),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 12),
+
+              // Description preview
+              Text(
+                report.description,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[700],
+                  height: 1.4,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+
+              const SizedBox(height: 16),
+
+              // Footer with location, media, and time
+              Row(
+                children: [
+                  Icon(Icons.location_on, size: 16, color: Colors.grey[500]),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      report.location,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w500,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  if (report.mediaCount > 0) ...[
+                    const SizedBox(width: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.blue[50],
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.photo_library,
+                              size: 14, color: Colors.blue[600]),
+                          const SizedBox(width: 4),
                           Text(
-                            _getReportTypeDisplayName(report.reportType),
+                            '${report.mediaCount}',
                             style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey[600],
-                              fontWeight: FontWeight.w500,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.blue[600],
                             ),
                           ),
                         ],
                       ),
                     ),
                   ],
-                ),
-
-                const SizedBox(height: 12),
-
-                // Description preview
-                Text(
-                  report.description,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[700],
-                    height: 1.4,
+                  const SizedBox(width: 12),
+                  Text(
+                    _formatTimestamp(report.timestamp),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[500],
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-
-                const SizedBox(height: 16),
-
-                // Footer with location, media, and time
-                Row(
-                  children: [
-                    Icon(Icons.location_on, size: 16, color: Colors.grey[500]),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        report.location,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey[600],
-                          fontWeight: FontWeight.w500,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    if (report.mediaCount > 0) ...[
-                      const SizedBox(width: 12),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: Colors.blue[50],
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.photo_library,
-                                size: 14, color: Colors.blue[600]),
-                            const SizedBox(width: 4),
-                            Text(
-                              '${report.mediaCount}',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.blue[600],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                    const SizedBox(width: 12),
-                    Text(
-                      _formatTimestamp(report.timestamp),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[500],
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -830,55 +951,64 @@ class _MyReportsPageState extends State<MyReportsPage>
   Widget _buildEmptyState() {
     final loc = AppLocalizations.of(context)!;
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.grey[200]!,
-                  Colors.grey[100]!,
-                ],
+      child: FadeInAnimation(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            BounceAnimation(
+              child: GlassmorphicContainer(
+                width: 100,
+                height: 100,
+                borderRadius: 50,
+                blur: 10,
+                color: Colors.grey[100]!,
+                opacity: 0.8,
+                border: Border.all(
+                  color: Colors.grey[300]!,
+                  width: 2,
+                ),
+                child: Icon(
+                  Icons.assignment_outlined,
+                  size: 50,
+                  color: Colors.grey[400],
+                ),
               ),
-              shape: BoxShape.circle,
             ),
-            child: Icon(
-              Icons.assignment_outlined,
-              size: 50,
-              color: Colors.grey[400],
-            ),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            _selectedFilter == 'All'
-                ? loc.reports_empty_all
-                : loc.reports_empty_filtered(
-                    _getStatusDisplayName(_selectedFilter, loc)),
-            style: const TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1F2937),
-            ),
-          ),
-          const SizedBox(height: 12),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
-            child: Text(
-              _selectedFilter == 'All'
-                  ? loc.reports_empty_all_sub
-                  : loc.reports_empty_filtered_sub,
-              style: TextStyle(
-                fontSize: 15,
-                color: Colors.grey[600],
-                height: 1.4,
+            const SizedBox(height: 24),
+            SlideInAnimation(
+              delay: const Duration(milliseconds: 200),
+              child: Text(
+                _selectedFilter == 'All'
+                    ? loc.reports_empty_all
+                    : loc.reports_empty_filtered(
+                        _getStatusDisplayName(_selectedFilter, loc)),
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1F2937),
+                ),
               ),
-              textAlign: TextAlign.center,
             ),
-          ),
-        ],
+            const SizedBox(height: 12),
+            FadeInAnimation(
+              delay: const Duration(milliseconds: 300),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: Text(
+                  _selectedFilter == 'All'
+                      ? loc.reports_empty_all_sub
+                      : loc.reports_empty_filtered_sub,
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.grey[600],
+                    height: 1.4,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -923,7 +1053,7 @@ class _MyReportsPageState extends State<MyReportsPage>
         return Icons.thunderstorm;
       case 'pollution':
         return Icons.warning;
-      case 'marine_life':
+      case 'wildlife':
         return Icons.pets;
       case 'debris':
         return Icons.delete_outline;
@@ -937,13 +1067,13 @@ class _MyReportsPageState extends State<MyReportsPage>
   String _getReportTypeDisplayName(String reportType) {
     switch (reportType.toLowerCase()) {
       case 'high_waves':
-        return 'High Waves';
+        return 'Severe Weather';
       case 'storm':
         return 'Storm';
       case 'pollution':
         return 'Pollution';
-      case 'marine_life':
-        return 'Marine Life';
+      case 'wildlife':
+        return 'Wildlife';
       case 'debris':
         return 'Debris';
       case 'weather':
@@ -1055,7 +1185,7 @@ class _ReportDetailModalState extends State<ReportDetailModal>
         return Icons.thunderstorm;
       case 'pollution':
         return Icons.warning;
-      case 'marine_life':
+      case 'wildlife':
         return Icons.pets;
       case 'debris':
         return Icons.delete_outline;
@@ -1069,13 +1199,13 @@ class _ReportDetailModalState extends State<ReportDetailModal>
   String _getReportTypeDisplayName(String reportType) {
     switch (reportType.toLowerCase()) {
       case 'high_waves':
-        return 'High Waves';
+        return 'Severe Weather';
       case 'storm':
         return 'Storm';
       case 'pollution':
         return 'Pollution';
-      case 'marine_life':
-        return 'Marine Life';
+      case 'wildlife':
+        return 'Wildlife';
       case 'debris':
         return 'Debris';
       case 'weather':

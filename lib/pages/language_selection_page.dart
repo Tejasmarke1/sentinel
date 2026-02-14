@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:coastsentinel/utils/app_colors.dart';
 import '../locale_controller.dart';
 
 class LanguageSelectionPage extends StatefulWidget {
@@ -54,14 +55,14 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage>
       icon: '🇮🇳',
     ),
     
-    // West Coast Languages
+    // Western Region Languages
     LanguageOption(
       code: 'mr',
       name: 'Marathi',
       nativeName: 'मराठी',
       region: 'Maharashtra',
       icon: '🌊',
-      category: 'West Coast',
+      category: 'Western Region',
     ),
     LanguageOption(
       code: 'gu',
@@ -69,7 +70,7 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage>
       nativeName: 'ગુજરાતી',
       region: 'Gujarat',
       icon: '🌊',
-      category: 'West Coast',
+      category: 'Western Region',
     ),
     LanguageOption(
       code: 'kn',
@@ -77,7 +78,7 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage>
       nativeName: 'ಕನ್ನಡ',
       region: 'Karnataka',
       icon: '🌊',
-      category: 'West Coast',
+      category: 'Western Region',
     ),
     LanguageOption(
       code: 'ml',
@@ -85,17 +86,17 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage>
       nativeName: 'മലയാളം',
       region: 'Kerala',
       icon: '🌊',
-      category: 'West Coast',
+      category: 'Western Region',
     ),
     
-    // East Coast Languages
+    // Eastern Region Languages
     LanguageOption(
       code: 'te',
       name: 'Telugu',
       nativeName: 'తెలుగు',
       region: 'Andhra Pradesh, Telangana',
       icon: '🏖️',
-      category: 'East Coast',
+      category: 'Eastern Region',
     ),
     LanguageOption(
       code: 'ta',
@@ -103,7 +104,7 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage>
       nativeName: 'தமிழ்',
       region: 'Tamil Nadu',
       icon: '🏖️',
-      category: 'East Coast',
+      category: 'Eastern Region',
     ),
     LanguageOption(
       code: 'or',
@@ -111,7 +112,7 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage>
       nativeName: 'ଓଡ଼ିଆ',
       region: 'Odisha',
       icon: '🏖️',
-      category: 'East Coast',
+      category: 'Eastern Region',
     ),
     LanguageOption(
       code: 'bn',
@@ -119,7 +120,7 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage>
       nativeName: 'বাংলা',
       region: 'West Bengal',
       icon: '🏖️',
-      category: 'East Coast',
+      category: 'Eastern Region',
     ),
     
     // Island Territories
@@ -127,7 +128,7 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage>
       code: 'as',
       name: 'Assamese',
       nativeName: 'অসমীয়া',
-      region: 'Northeastern Coastal Areas',
+      region: 'Northeastern Areas',
       icon: '🏝️',
       category: 'Island Territories',
     ),
@@ -326,8 +327,8 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage>
   Map<String, List<LanguageOption>> _groupLanguagesByCategory() {
     final Map<String, List<LanguageOption>> grouped = {
       'Primary': [],
-      'West Coast': [],
-      'East Coast': [],
+      'Western Region': [],
+      'Eastern Region': [],
       'Island Territories': [],
     };
 
@@ -345,7 +346,6 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
       body: _isLoading 
           ? _buildLoadingScreen()
           : FadeTransition(
@@ -537,13 +537,13 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage>
                   
                   const SizedBox(height: 24),
                   
-                  // West Coast Languages
-                  _buildLanguageSection('West Coast Languages', groupedLanguages['West Coast']!),
+                  // Western Region Languages
+                  _buildLanguageSection('Western Region Languages', groupedLanguages['Western Region']!),
                   
                   const SizedBox(height: 24),
                   
-                  // East Coast Languages
-                  _buildLanguageSection('East Coast Languages', groupedLanguages['East Coast']!),
+                  // Eastern Region Languages
+                  _buildLanguageSection('Eastern Region Languages', groupedLanguages['Eastern Region']!),
                   
                   const SizedBox(height: 24),
                   

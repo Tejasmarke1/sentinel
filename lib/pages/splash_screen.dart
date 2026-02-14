@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:coastsentinel/utils/app_colors.dart';
 import 'dart:math' as math;
 
 class SplashScreen extends StatefulWidget {
@@ -126,10 +127,10 @@ class _SplashScreenState extends State<SplashScreen>
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              const Color(0xFF1E3A8A), // Deep blue
-              const Color(0xFF3B82F6), // Bright blue
-              const Color(0xFF06B6D4), // Cyan
-              const Color(0xFF0891B2), // Darker cyan
+              AppColors.infoBlueDark, // Deep blue
+              AppColors.infoBlueLight, // Bright blue
+              AppColors.accentCyan, // Cyan
+              AppColors.accentCyanDark, // Darker cyan
             ],
             stops: const [0.0, 0.3, 0.7, 1.0],
           ),
@@ -169,13 +170,13 @@ class _SplashScreenState extends State<SplashScreen>
                               shape: BoxShape.circle,
                               gradient: RadialGradient(
                                 colors: [
-                                  Colors.white.withOpacity(0.2),
-                                  Colors.white.withOpacity(0.05),
+                                  AppColors.withOpacity(AppColors.textOnDark, 0.2),
+                                  AppColors.withOpacity(AppColors.textOnDark, 0.05),
                                 ],
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.white.withOpacity(0.1),
+                                  color: AppColors.withOpacity(AppColors.textOnDark, 0.1),
                                   blurRadius: 20,
                                   spreadRadius: 5,
                                 ),
@@ -187,10 +188,10 @@ class _SplashScreenState extends State<SplashScreen>
                               height: 100,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: Colors.white,
+                                color: AppColors.surfaceColor,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
+                                    color: AppColors.shadowLight,
                                     blurRadius: 10,
                                     offset: const Offset(0, 4),
                                   ),
@@ -218,13 +219,13 @@ class _SplashScreenState extends State<SplashScreen>
                       child: Text(
                         'SENTINEL',
                         style: theme.textTheme.headlineLarge?.copyWith(
-                          color: Colors.white,
+                          color: AppColors.textOnDark,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 3.0,
                           fontSize: 32,
                           shadows: [
                             Shadow(
-                              color: Colors.black.withOpacity(0.3),
+                              color: AppColors.shadowMedium,
                               offset: const Offset(0, 2),
                               blurRadius: 4,
                             ),
@@ -247,17 +248,17 @@ class _SplashScreenState extends State<SplashScreen>
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.15),
+                          color: AppColors.withOpacity(AppColors.textOnDark, 0.15),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: Colors.white.withOpacity(0.3),
+                            color: AppColors.withOpacity(AppColors.textOnDark, 0.3),
                             width: 1,
                           ),
                         ),
                         child: Text(
-                          'Crowdsourced Ocean Hazard Alerts',
+                          'Crowdsourced Hazard Alerts',
                           style: theme.textTheme.bodyLarge?.copyWith(
-                            color: Colors.white,
+                            color: AppColors.textOnDark,
                             fontWeight: FontWeight.w500,
                             fontSize: 16,
                           ),
@@ -276,12 +277,12 @@ class _SplashScreenState extends State<SplashScreen>
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: AppColors.withOpacity(AppColors.textOnDark, 0.2),
                         shape: BoxShape.circle,
                       ),
                       child: const CircularProgressIndicator(
                         strokeWidth: 3,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.textOnDark),
                       ),
                     ),
                   ),
@@ -301,7 +302,7 @@ class _SplashScreenState extends State<SplashScreen>
                     Text(
                       'Stay Safe, Stay Informed',
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: Colors.white.withOpacity(0.8),
+                        color: AppColors.withOpacity(AppColors.textOnDark, 0.8),
                         fontWeight: FontWeight.w400,
                       ),
                     ),
@@ -310,22 +311,22 @@ class _SplashScreenState extends State<SplashScreen>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          Icons.waves,
+                          Icons.warning_amber_rounded,
                           size: 16,
-                          color: Colors.white.withOpacity(0.6),
+                          color: AppColors.withOpacity(AppColors.textOnDark, 0.6),
                         ),
                         const SizedBox(width: 8),
                         Text(
                           'Powered by Community',
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: Colors.white.withOpacity(0.6),
+                            color: AppColors.withOpacity(AppColors.textOnDark, 0.6),
                           ),
                         ),
                         const SizedBox(width: 8),
                         Icon(
-                          Icons.waves,
+                          Icons.warning_amber_rounded,
                           size: 16,
-                          color: Colors.white.withOpacity(0.6),
+                          color: AppColors.withOpacity(AppColors.textOnDark, 0.6),
                         ),
                       ],
                     ),
@@ -348,7 +349,7 @@ class WavePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withOpacity(0.1)
+      ..color = AppColors.withOpacity(AppColors.textOnDark, 0.1)
       ..style = PaintingStyle.fill;
 
     final path = Path();
@@ -373,7 +374,7 @@ class WavePainter extends CustomPainter {
 
     // Second wave
     final paint2 = Paint()
-      ..color = Colors.white.withOpacity(0.05)
+      ..color = AppColors.withOpacity(AppColors.textOnDark, 0.05)
       ..style = PaintingStyle.fill;
 
     final path2 = Path();

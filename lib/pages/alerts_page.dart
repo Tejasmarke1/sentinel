@@ -85,43 +85,68 @@ class _AlertsPageState extends State<AlertsPage> with TickerProviderStateMixin {
           children: [
             // Header
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
+                  colors: [
+                    const Color(0xFF1E40AF),
+                    const Color(0xFF3B82F6),
+                    const Color(0xFF60A5FA),
+                  ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [
-                    theme.primaryColor,
-                    theme.primaryColor.withOpacity(0.8),
-                  ],
+                  stops: const [0.0, 0.6, 1.0],
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF3B82F6).withOpacity(0.25),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Icon(
-                        Icons.warning_amber_rounded,
-                        color: Colors.white,
-                        size: 32,
+                      Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.3),
+                            width: 1,
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.warning_amber_rounded,
+                          color: Colors.white,
+                          size: 28,
+                        ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 16),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               l10n.alerts_title,
-                              style: theme.textTheme.headlineSmall?.copyWith(
-                                color: Colors.white,
+                              style: const TextStyle(
+                                fontSize: 28,
                                 fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                letterSpacing: -0.5,
                               ),
                             ),
                             Text(
                               l10n.alerts_subtitle,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: Colors.white.withOpacity(0.9),
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w400,
                               ),
                             ),
                           ],
@@ -136,21 +161,32 @@ class _AlertsPageState extends State<AlertsPage> with TickerProviderStateMixin {
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(25),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.3),
+                        width: 1,
+                      ),
                     ),
                     child: TabBar(
                       controller: _tabController,
                       indicator: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(25),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
-                      labelColor: theme.primaryColor,
+                      labelColor: const Color(0xFF3B82F6),
                       unselectedLabelColor: Colors.white,
                       labelStyle: const TextStyle(
-                        fontSize: 12,
+                        fontSize: 13,
                         fontWeight: FontWeight.w600,
                       ),
                       unselectedLabelStyle: const TextStyle(
-                        fontSize: 12,
+                        fontSize: 13,
                         fontWeight: FontWeight.w500,
                       ),
                       tabs: [
@@ -322,51 +358,66 @@ class _AlertsPageState extends State<AlertsPage> with TickerProviderStateMixin {
         : null;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Card(
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: BorderSide(
-            color: alert.severityColor,
-            width: 2,
-          ),
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: alert.severityColor.withOpacity(0.2),
+          width: 1.5,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           onTap: () => _showAlertDetails(alert, l10n),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header Row
+                // Header Row with severity badge
                 Row(
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
+                        horizontal: 12,
+                        vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: alert.severityColor,
-                        borderRadius: BorderRadius.circular(4),
+                        color: alert.severityColor.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: alert.severityColor.withOpacity(0.3),
+                          width: 1,
+                        ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
-                            alert.severityIcon,
-                            color: Colors.white,
-                            size: 14,
+                          Container(
+                            width: 6,
+                            height: 6,
+                            decoration: BoxDecoration(
+                              color: alert.severityColor,
+                              shape: BoxShape.circle,
+                            ),
                           ),
-                          const SizedBox(width: 4),
+                          const SizedBox(width: 6),
                           Text(
                             _getSeverityText(alert.severity, l10n),
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
+                              color: alert.severityColor,
                             ),
                           ),
                         ],
@@ -375,55 +426,71 @@ class _AlertsPageState extends State<AlertsPage> with TickerProviderStateMixin {
                     const Spacer(),
                     Text(
                       alert.getFormattedTimestamp(),
-                      style: theme.textTheme.bodySmall?.copyWith(
+                      style: TextStyle(
+                        fontSize: 13,
                         color: Colors.grey[600],
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
                 // Title
                 Text(
                   alert.title,
-                  style: theme.textTheme.titleMedium?.copyWith(
+                  style: const TextStyle(
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
+                    color: Color(0xFF1F2937),
                   ),
                 ),
                 const SizedBox(height: 8),
                 // Description
                 Text(
                   alert.description,
-                  style: theme.textTheme.bodyMedium?.copyWith(
+                  style: TextStyle(
+                    fontSize: 15,
                     color: Colors.grey[700],
+                    height: 1.4,
                   ),
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 12),
-                // Footer Row
-                Row(
-                  children: [
-                    Icon(
-                      Icons.location_on,
-                      size: 16,
-                      color: Colors.grey[600],
-                    ),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        distance != null
-                            ? l10n.alerts_distance_km(distance.toStringAsFixed(1))
-                            : alert.locationText,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[600],
+                const SizedBox(height: 16),
+                // Footer with location and action
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[50],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.location_on,
+                        size: 18,
+                        color: const Color(0xFF3B82F6),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          distance != null
+                              ? l10n.alerts_distance_km(distance.toStringAsFixed(1))
+                              : alert.locationText,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey[700],
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
-                    ),
-                    TextButton(
-                      onPressed: () => _showAlertDetails(alert, l10n),
-                      child: Text(l10n.alerts_view_details),
-                    ),
-                  ],
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        size: 14,
+                        color: const Color(0xFF3B82F6),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

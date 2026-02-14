@@ -51,23 +51,25 @@ class MyApp extends StatelessWidget {
             Locale('en', ''), // English
             Locale('hi', ''), // Hindi (widely understood)
 
-            // West Coast Languages
+            // Western Region Languages
             Locale('mr', ''), // Marathi (Maharashtra)
             Locale('gu', ''), // Gujarati (Gujarat)
             Locale('kn', ''), // Kannada (Karnataka)
             Locale('ml', ''), // Malayalam (Kerala)
 
-            // East Coast Languages
+            // Eastern Region Languages
             Locale('te', ''), // Telugu (Andhra Pradesh, Telangana)
             Locale('ta', ''), // Tamil (Tamil Nadu)
             Locale('or', ''), // Odia (Odisha)
             Locale('bn', ''), // Bengali (West Bengal)
 
             // Island Territories
-            Locale('as', ''), // Assamese (for northeastern coastal areas)
+            Locale('as', ''), // Assamese (for northeastern areas)
           ],
           debugShowCheckedModeBanner: false,
-          theme: oceanTheme,
+          theme: lightTheme,
+          darkTheme: darkTheme,
+          themeMode: ThemeMode.system, // Follows system theme preference
           home: const SplashScreen(),
           routes: {
             '/login': (_) => const LoginPage(),
